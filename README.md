@@ -1,3 +1,3 @@
-# WebTemplate
+# CoinCard
 
-A web template.
+A simple game built with HTML and JS animated with CSS.
