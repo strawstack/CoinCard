@@ -34,9 +34,13 @@ A simple game built with HTML and JS animated with CSS.
 
 # TODO
 
-- [ ] Finish generating the 2D grid array (placeholders until Machine class is built).
+- [ ] Define `CenterMachine` class. 
+    - Ability for user to click a mining arm.
+    - Mining arm will animate to adj cell.
+    - Decrement value and turn gold.
+    - Animate back into place.
+    - Value in CenterMachine will increase.
 
-- [ ] Create class for Machines
-    - [ ] uid, arm x 4, coins, cell {row, col}, mine function, action state (boolean).
-
-- [ ] Special center machine can hold 999+ coins (storage capacity is only special).
+    - Fire setTimeout on animation start.
+    - Use CSS animation to animate arm.
+    - Checks inside of setTimeout ensure value is not zero on arm arrival.

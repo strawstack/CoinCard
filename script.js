@@ -1,5 +1,17 @@
 (() => {
 
+    class Machine {
+        constructor() {
+            
+          }
+    }
+
+    class CenterMachine {
+        constructor() {
+            
+          }
+    }
+
     function p(text) {
         console.log(text);
     }
@@ -34,6 +46,17 @@
         return line;
     }
 
+    function makeText(CELL_SIZE, x, y, value) {
+        let text = document.createElement("div");
+        text.style.top = `${y - CELL_SIZE/2}px`;
+        text.style.left = `${x - CELL_SIZE/2}px`;
+        text.style.width = `${CELL_SIZE}px`;
+        text.style.height = `${CELL_SIZE}px`;
+        text.textContent = value;
+        text.className = "textContainer";
+        return text;
+    }
+
     function drawGridLines(svg, CELL_SIZE, WIDTH, HEIGHT, COLS, ROWS) {
         
         let line = makeLine(0, 1, WIDTH, 1);
@@ -66,7 +89,7 @@
         svg.appendChild(line);
     }
 
-    function makeGrid(WIDTH, HEIGHT, ROWS, COLS) {
+    function makeGrid(ROWS, COLS) {
         let grid = [];
 
         /* A cell can have the following states:
@@ -75,7 +98,59 @@
          *  Open: the player can buy the cell at which time it will become a machine.
          */
 
-        
+        for (let r = 0; r < ROWS; r++) {
+            let row = [];
+            for (let c = 0; c < COLS; c++) {
+                let item = {
+                    type: "number",
+                    value: (Math.floor(Math.random() * 9) + 1), // 1 to 9
+                    ref: null
+                };
+                row.push(item);
+            }
+            grid.push(row);
+        }
+
+        // Add three open cells
+        for (let i = 0; i < 3; i++) {
+            let index = Math.floor(Math.random() * 3);
+            let costs = [1, 3, 5];
+            let r = Math.floor(Math.random() * ROWS);
+            let c = Math.floor(Math.random() * COLS);
+            grid[r][c] = {
+                type: "open",
+                cost: costs[index]
+            };
+        }
+
+        // Center cell is a special machine
+        const CENTER_ROW = Math.floor(ROWS/2);
+        const CENTER_COL = Math.floor(COLS/2);
+        grid[CENTER_ROW][CENTER_COL] = {
+            type: "number",
+            value: 0,
+            ref: null
+        };;
+
+        return grid;
+    }
+
+    function placeItems(overlay, ROWS, COLS, CELL_SIZE, grid) {
+        for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+                switch(grid[r][c].type) {
+                    case "number":
+                        let text = makeText(
+                            CELL_SIZE,  
+                            40 + CELL_SIZE * c,
+                            40 + CELL_SIZE * r,
+                            grid[r][c].value);
+                        grid[r][c].ref = text;
+                        overlay.appendChild(text);
+                        break;
+                }
+            }
+        }
     }
 
     function main() {
@@ -85,19 +160,26 @@
         const { WIDTH, HEIGHT, ROWS, COLS } = getDocumentBodySizeAsMultipleOf(CELL_SIZE);
 
         // Elements
+        const container = document.querySelector(".container");
         const svg = document.querySelector("svg");
-
-        // Variables
-        let grid = makeGrid(WIDTH, HEIGHT, ROWS, COLS);
+        const overlay = document.querySelector(".overlay");
         
-        // Set SVG to fill screen
+        // Variables
+        let grid = makeGrid(ROWS, COLS);
+        
+        // Fill screen with SVG, and overlay
+        container.style.width = `${WIDTH}px`;
+        container.style.height = `${HEIGHT}px`;
         svg.setAttribute("width", WIDTH);
         svg.setAttribute("height", HEIGHT);
-
+        
         // Draw grid lines
         drawGridLines(svg, CELL_SIZE, WIDTH, HEIGHT, COLS, ROWS);
 
-        p(grid)
+        // Place items in cells
+        placeItems(overlay, ROWS, COLS, CELL_SIZE, grid);
+
+        
 
     }
 
