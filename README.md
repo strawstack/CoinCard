@@ -34,12 +34,14 @@ A simple game built with HTML and JS animated with CSS.
 
 # TODO
 
-- [ ] Define `CenterMachine` class. 
-    - Ability for user to click a mining arm.
+- [ ] Implement remained of coinArm animations. 
     - Mining arm will animate to adj cell.
     - Decrement value and turn gold.
+        - Take all coins because center has no limit
+        - If automine and zero found then enter event queue
     - Animate back into place.
     - Value in CenterMachine will increase.
+        - Notify event queue that center machine has changed value
 
     - Fire setTimeout on animation start.
     - Use CSS animation to animate arm.

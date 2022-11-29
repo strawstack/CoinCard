@@ -1,6 +1,15 @@
 /* @import url('https://fonts.googleapis.com/css2?family=Nunito&display=swap'); */
 @import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
 
+@keyframes rightArmOut {
+    from {
+        cx: 22; /* size2 - arm_size2 - pad */
+    }
+    to {
+        cx: 60;
+    }
+  }
+
 html, body {
     margin: 0px;
     padding: 0px;
@@ -59,14 +68,22 @@ body {
             stroke: #444;
             stroke-width: 3px;
             fill: transparent;
+            pointer-events: none;
         }
 
         .coinArm {
-            stroke: #444;
+            stroke: #CCC;
             stroke-width: 3px;
             fill: transparent;
-            opacity: 0.2;
+            cursor: pointer;
         }
             .coinArm.selected {
-                opacity: 1;   
+                stroke: #444;   
+            }
+            .coinArm.rightArmOut {
+                animation-name: rightArmOut; 
+                animation-duration: 1s;
+                animation-timing-function: ease-in-out;
+                animation-iteration-count: 1;
+                animation-fill-mode: forwards;
             }

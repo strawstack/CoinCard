@@ -21,18 +21,36 @@
                 y: row * CELL_SIZE + CELL_SIZE/2
             };
             
+            this.group = this.createGroup(this.CENTER);
+
             this.outerCircle = this.createOuterCircle(
-                this.CENTER.x,
-                this.CENTER.y,
+                0, 0,
                 this.SIZE/2
             );
 
-            this.arms = [
-                this.createCoinArm("top"),
-                this.createCoinArm("right"),
-                this.createCoinArm("bottom"),
-                this.createCoinArm("left")
-            ];
+            let top_arm = this.createCoinArm("top");
+            let right_arm = this.createCoinArm("right");
+            let bottom_arm = this.createCoinArm("bottom");
+            let left_arm =  this.createCoinArm("left");
+            this.arms = [ top_arm, right_arm, bottom_arm, left_arm];
+
+            // Handle click on coinArms
+            this.arms[1].addEventListener("click", (e) => this.handleCoinArmClick(e));
+
+            // Append elements in draw order
+            this.svg.appendChild(this.group);
+            this.group.appendChild(this.outerCircle);
+            this.group.appendChild(top_arm);
+            this.group.appendChild(right_arm);
+            this.group.appendChild(bottom_arm);
+            this.group.appendChild(left_arm);
+
+        }
+        createGroup({x, y}) {
+            const svgns = "http://www.w3.org/2000/svg";
+            let g = document.createElementNS(svgns, "g");
+            g.setAttribute("transform", `translate(${x}, ${y})`);
+            return g;
         }
         createCircle(cx, cy, r) {
             const svgns = "http://www.w3.org/2000/svg";
@@ -45,7 +63,6 @@
         createOuterCircle(cx, cy, r) {
             let outerCircle = this.createCircle(cx, cy, r);
             outerCircle.setAttribute("class", "outerCircle");
-            this.svg.appendChild(outerCircle);
             return outerCircle;
         }
         createCoinArm(pos) {
@@ -57,16 +74,27 @@
             let pad = 3;
 
             let lookup = {
-                "top": {cx: centx, cy: centy - size2 + arm_size2 + pad},
-                "right": {cx: centx + size2 - arm_size2 - pad, cy: centy},
-                "bottom": {cx: centx, cy: centy + size2 - arm_size2 - pad},
-                "left": {cx: centx - size2 + arm_size2 + pad, cy: centy}
+                "top": {cx: 0, cy: -size2 + arm_size2 + pad},
+                "right": {cx: size2 - arm_size2 - pad, cy: 0},
+                "bottom": {cx: 0, cy: size2 - arm_size2 - pad},
+                "left": {cx: -size2 + arm_size2 + pad, cy: 0}
             }
             let {cx, cy} = lookup[pos];
             let coinArm = this.createCircle(cx, cy, arm_size2);
             coinArm.setAttribute("class", "coinArm");
-            this.svg.appendChild(coinArm);
             return coinArm;
+        }
+        handleCoinArmClick(e) {
+            let coinArm = e.target;
+            let BASE_CLASS = "coinArm";
+            coinArm.setAttribute("class", `${BASE_CLASS} rightArmOut`);
+            setTimeout(() => {
+                p("moved out");
+            }, 1000);
+
+            // TODO - finisg implementation and find the right distance for
+                // coinArms to travel
+
         }
     }
 
@@ -227,6 +255,9 @@
         const svg = document.querySelector("svg");
         const overlay = document.querySelector(".overlay");
         
+        // Draw grid lines
+        drawGridLines(svg, CELL_SIZE, WIDTH, HEIGHT, COLS, ROWS);
+
         // Variables
         let grid = makeGrid(svg, CELL_SIZE, ROWS, COLS);
         
@@ -236,9 +267,6 @@
         svg.setAttribute("width", WIDTH);
         svg.setAttribute("height", HEIGHT);
         
-        // Draw grid lines
-        drawGridLines(svg, CELL_SIZE, WIDTH, HEIGHT, COLS, ROWS);
-
         // Place items in cells
         placeItems(overlay, ROWS, COLS, CELL_SIZE, grid);
 
