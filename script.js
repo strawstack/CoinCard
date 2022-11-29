@@ -7,9 +7,67 @@
     }
 
     class CenterMachine {
-        constructor() {
+        constructor(svg, CELL_SIZE, {col, row}) {
+            this.svg = svg;
+            this.col = col;
+            this.row = row;
+
+            this.coinStore = 0;
+            this.STROKE = 3;
+            this.SIZE = 75 - 2 * this.STROKE;
+            this.ARM_SIZE = 25 - 2 * this.STROKE;
+            this.CENTER = {
+                x: col * CELL_SIZE + CELL_SIZE/2, 
+                y: row * CELL_SIZE + CELL_SIZE/2
+            };
             
-          }
+            this.outerCircle = this.createOuterCircle(
+                this.CENTER.x,
+                this.CENTER.y,
+                this.SIZE/2
+            );
+
+            this.arms = [
+                this.createCoinArm("top"),
+                this.createCoinArm("right"),
+                this.createCoinArm("bottom"),
+                this.createCoinArm("left")
+            ];
+        }
+        createCircle(cx, cy, r) {
+            const svgns = "http://www.w3.org/2000/svg";
+            let circle = document.createElementNS(svgns, "circle");
+            circle.setAttribute("cx", cx);
+            circle.setAttribute("cy", cy);
+            circle.setAttribute("r", r);
+            return circle;
+        }
+        createOuterCircle(cx, cy, r) {
+            let outerCircle = this.createCircle(cx, cy, r);
+            outerCircle.setAttribute("class", "outerCircle");
+            this.svg.appendChild(outerCircle);
+            return outerCircle;
+        }
+        createCoinArm(pos) {
+
+            let centx = this.CENTER.x;
+            let centy = this.CENTER.y;
+            let size2 = this.SIZE/2;
+            let arm_size2 = this.ARM_SIZE/2;
+            let pad = 3;
+
+            let lookup = {
+                "top": {cx: centx, cy: centy - size2 + arm_size2 + pad},
+                "right": {cx: centx + size2 - arm_size2 - pad, cy: centy},
+                "bottom": {cx: centx, cy: centy + size2 - arm_size2 - pad},
+                "left": {cx: centx - size2 + arm_size2 + pad, cy: centy}
+            }
+            let {cx, cy} = lookup[pos];
+            let coinArm = this.createCircle(cx, cy, arm_size2);
+            coinArm.setAttribute("class", "coinArm");
+            this.svg.appendChild(coinArm);
+            return coinArm;
+        }
     }
 
     function p(text) {
@@ -89,7 +147,7 @@
         svg.appendChild(line);
     }
 
-    function makeGrid(ROWS, COLS) {
+    function makeGrid(svg, CELL_SIZE, ROWS, COLS) {
         let grid = [];
 
         /* A cell can have the following states:
@@ -123,14 +181,19 @@
             };
         }
 
-        // Center cell is a special machine
+        // Create and place center machine
         const CENTER_ROW = Math.floor(ROWS/2);
         const CENTER_COL = Math.floor(COLS/2);
+
+        let centerMachine = new CenterMachine(svg, 
+            CELL_SIZE,
+            { col: CENTER_COL, row: CENTER_ROW }
+        );
+
         grid[CENTER_ROW][CENTER_COL] = {
-            type: "number",
-            value: 0,
-            ref: null
-        };;
+            type: "machine",
+            ref: centerMachine
+        };
 
         return grid;
     }
@@ -165,7 +228,7 @@
         const overlay = document.querySelector(".overlay");
         
         // Variables
-        let grid = makeGrid(ROWS, COLS);
+        let grid = makeGrid(svg, CELL_SIZE, ROWS, COLS);
         
         // Fill screen with SVG, and overlay
         container.style.width = `${WIDTH}px`;
@@ -178,8 +241,6 @@
 
         // Place items in cells
         placeItems(overlay, ROWS, COLS, CELL_SIZE, grid);
-
-        
 
     }
 

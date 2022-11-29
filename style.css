@@ -21,36 +21,52 @@ body {
     position: relative;
 }
 
-svg {
-    position: absolute;
-    z-index: 0;
-    background: white;
-}
+    .overlay {
+        position: absolute;
+        z-index: 5;
+        top: "0px";
+        right: "0px";
+        bottom: "0px";
+        left: "0px";
+        pointer-events: none;
+    }
 
-.overlay {
-    position: absolute;
-    z-index: 5;
-    top: "0px";
-    right: "0px";
-    bottom: "0px";
-    left: "0px";
-    pointer-events: none;
-}
+        .textContainer {
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
-.gridLine {
-    stroke: #DDD;
-}
+            font-size: 3.5rem;
+            font-weight: 600;
+            color: white;
+            -webkit-text-stroke: 3px #444;
 
-.textContainer {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+            padding-top: 3px;
+        }
 
-    font-size: 3.5rem;
-    font-weight: 600;
-    color: white;
-    -webkit-text-stroke: 3px #444;
+    svg {
+        position: absolute;
+        z-index: 0;
+        background: white;
+    }
 
-    padding-top: 3px;
-}
+        .gridLine {
+            stroke: #DDD;
+        }
+
+        .outerCircle {
+            stroke: #444;
+            stroke-width: 3px;
+            fill: transparent;
+        }
+
+        .coinArm {
+            stroke: #444;
+            stroke-width: 3px;
+            fill: transparent;
+            opacity: 0.2;
+        }
+            .coinArm.selected {
+                opacity: 1;   
+            }
