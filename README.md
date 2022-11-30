@@ -32,17 +32,22 @@ A simple game built with HTML and JS animated with CSS.
     - Sell machine.
     - Perhaps buy a single speed upgrade?
 
+- CenterMachine differs from other machines only in that the middle can become a plus sign "+" when more than a value of "F" (16). 
+
 # TODO
 
-- [ ] Implement remained of coinArm animations. 
-    - Mining arm will animate to adj cell.
-    - Decrement value and turn gold.
-        - Take all coins because center has no limit
-        - If automine and zero found then enter event queue
-    - Animate back into place.
-    - Value in CenterMachine will increase.
-        - Notify event queue that center machine has changed value
+- [ ] Time to refactor
+    - [ ] Write the ideal main class.
+    - [ ] Seperate Number, Open, Machine, and Notify into seperate files.
+    - [ ] Grid is the single source of truth.
+    - [ ] Notify is informed about events and dispatches instructions to cells.
+        - [ ] Cells listen to notify on creation.
+- [ ] When a cell becomes open, and calls notify, adj machines should hid related arm.
+- [ ] Machines should be able to take value from other machines.
+- [ ] When you click the center of a machine the menu should display.
 
-    - Fire setTimeout on animation start.
-    - Use CSS animation to animate arm.
-    - Checks inside of setTimeout ensure value is not zero on arm arrival.
+# Bugs
+
+- [ ] Machines can exist on the edge and mine off the board.
+- [ ] Machines can exist next to open cells and mine into "unpurchased" open cells. 
+- [ ] If a machine mines machine B, and B has zero coins, the cell becomes open. 

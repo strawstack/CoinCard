@@ -2,13 +2,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
 
 @keyframes rightArmOut {
-    from {
-        cx: 22; /* size2 - arm_size2 - pad */
-    }
-    to {
-        cx: 60;
-    }
-  }
+    from { cx: 22; } /* size2 - arm_size2 - pad */
+    to { cx: 77.5; } /* 15.5 to get to edge + CELL_SIZE/2 */
+}
+
+@keyframes rightArmBack {
+    from { cx: 77.5; /* size2 - arm_size2 - pad */ }
+    to { cx: 22; }
+}
 
 html, body {
     margin: 0px;
@@ -53,6 +54,15 @@ body {
 
             padding-top: 3px;
         }
+        .textContainer.coinStore {
+            font-size: 1.3rem;
+            -webkit-text-stroke: 0px;
+            color: #FFD700; /* GOLD */
+        }
+        .textContainer.openCell {
+            -webkit-text-stroke-color: #FFD700;
+            color: #FFEC86; /* GOLD_FILL */
+        }
 
     svg {
         position: absolute;
@@ -62,6 +72,13 @@ body {
 
         .gridLine {
             stroke: #DDD;
+        }
+
+        .openCellCoin {
+            stroke: #FFD700; /* GOLD */;
+            stroke-width: 3px;
+            fill: #FFEC86; /* GOLD_FILL */
+            cursor: pointer;
         }
 
         .outerCircle {
@@ -82,6 +99,13 @@ body {
             }
             .coinArm.rightArmOut {
                 animation-name: rightArmOut; 
+                animation-duration: 1s;
+                animation-timing-function: ease-in-out;
+                animation-iteration-count: 1;
+                animation-fill-mode: forwards;
+            }
+            .coinArm.rightArmBack {
+                animation-name: rightArmBack;
                 animation-duration: 1s;
                 animation-timing-function: ease-in-out;
                 animation-iteration-count: 1;
