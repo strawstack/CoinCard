@@ -31,22 +31,14 @@ body {
     position: relative;
 }
 
-    .underlay, .overlay {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        pointer-events: none;
-    }
-
     .overlay {
-        z-index: 10;
-    }
-
-    .underlay {
-        z-index: 0;
-        background: white;
+        position: absolute;
+        z-index: 5;
+        top: "0px";
+        right: "0px";
+        bottom: "0px";
+        left: "0px";
+        pointer-events: none;
     }
 
         .textContainer {
@@ -74,8 +66,8 @@ body {
 
     svg {
         position: absolute;
-        z-index: 5;
-        background: transparent;
+        z-index: 0;
+        background: white;
     }
 
         .gridLine {
