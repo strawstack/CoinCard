@@ -1,9 +1,5 @@
 (() => {
 
-    function p(text) {
-        console.log(text);
-    }
-
     class Machine {
         constructor(svg, grid, eventSys, CELL_SIZE, {col, row}, isCenterMachine) {
             this.svg = svg;
@@ -176,21 +172,6 @@
         }
     }
 
-    function destroyCell(grid, col, row) {
-        const cell = grid[row][col];
-        switch(cell.type) {
-            case "number":
-                cell.ref.remove(); 
-                break;
-            case "machine":
-                break;
-            case "open":
-                cell.circle_ref.remove();
-                cell.text_ref.remove();
-                break;
-        }
-    }
-
     function getDocumentBodySize() {
         const WIDTH  = window.innerWidth;
         const HEIGHT = window.innerHeight;
@@ -210,14 +191,7 @@
             COLS: COLS
         };
     }
-    function createCircle(cx, cy, r) {
-        const svgns = "http://www.w3.org/2000/svg";
-        let circle = document.createElementNS(svgns, "circle");
-        circle.setAttribute("cx", cx);
-        circle.setAttribute("cy", cy);
-        circle.setAttribute("r", r);
-        return circle;
-    }
+
     function makeLine(x1, y1, x2, y2) {
         const svgns = "http://www.w3.org/2000/svg";
         let line = document.createElementNS(svgns, "line");
@@ -260,43 +234,6 @@
         svg.appendChild(line);
     }
 
-    function purchaseOpenCell(svg, grid, eventSys, CELL_SIZE, col, row) {
-        destroyCell(grid, col, row);
-        grid[row][col] = {
-            type: "machine",
-            ref: new Machine(svg, grid, eventSys, CELL_SIZE, {col, row}, false)
-        };
-    }
-
-    function openCellAddClickHandle(svg, grid, eventSys, CELL_SIZE, col, row) {
-        const cell = grid[row][col];
-        /*
-            type: "open",
-            cost: costs[index],
-            circle_ref: null,
-            text_ref: null
-        */
-        cell.circle_ref.addEventListener("click", () => {   
-            purchaseOpenCell(svg, grid, eventSys, CELL_SIZE, col, row);
-        });
-    }
-
-    function createOpenCell(grid, CELL_SIZE, c, r) {
-        let circle = createCircle(
-            40 + CELL_SIZE * c,
-            40 + CELL_SIZE * r,
-            75/2 - 2 * 3 /* SIZE/2 - 2 * STROKE_WIDTH */
-        );
-        circle.setAttribute("class", "openCellCoin");
-        let openText = makeText(
-            CELL_SIZE,  
-            40 + CELL_SIZE * c,
-            40 + CELL_SIZE * r,
-            decimalToHex(grid[r][c].cost), 
-            "openCell");
-        return {circle, openText};
-    }
-
     function placeItems(svg, overlay, eventSys, ROWS, COLS, CELL_SIZE, grid) {
         for (let r = 0; r < ROWS; r++) {
             for (let c = 0; c < COLS; c++) {
@@ -311,26 +248,10 @@
                         overlay.appendChild(text);
                         break;
                     case "open":
-                        let {circle, openText} = createOpenCell(grid, CELL_SIZE, c, r);
-                        grid[r][c].circle_ref = circle;
-                        grid[r][c].text_ref = openText;
-                        svg.appendChild(circle);
-                        overlay.appendChild(openText);
-                        openCellAddClickHandle(svg, grid, eventSys, CELL_SIZE, c, r);
                         break;
                 }
             }
         }
-    }
-
-    function render(ELEMS, CONST, grid, {col, row}) {
-        const cell = grid[row][col];
-        const renderLookup = {
-            "machine": renderMachine,
-            "number": renderNumber,
-            "open": renderOpen
-        };
-        renderLookup[cell.type](ELEMS, CONST, grid, {col, row});
     }
 
     function makeGrid(ROWS, COLS) {
@@ -357,7 +278,7 @@
             let c = Math.floor(Math.random() * COLS);
             grid[r][c] = {
                 type: "open",
-                cost: costs[index],
+                value: costs[index],
                 ref: {
                     circle: null,
                     text: null
@@ -374,8 +295,10 @@
 
         grid[CENTER_ROW][CENTER_COL] = {
             type: "machine",
+            value: 0,
             ref: {
                 text: null,
+                circle: null,
                 arm: {
                     top: null,
                     right: null,
