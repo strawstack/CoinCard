@@ -1,14 +1,40 @@
 /* @import url('https://fonts.googleapis.com/css2?family=Nunito&display=swap'); */
 @import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
 
-@keyframes rightArmOut {
-    from { cx: 22; } /* size2 - arm_size2 - pad */
-    to { cx: 77.5; } /* 15.5 to get to edge + CELL_SIZE/2 */
+@keyframes topArmOut {
+    from { cy: -22; } /* size2 - arm_size2 - pad */
+    to { cy: -80; } /* 15.5 to get to edge + CELL_SIZE/2 */
+}
+@keyframes topArmBack {
+    from { cy: -80; /* size2 - arm_size2 - pad */ }
+    to { cy: -22; }
 }
 
+@keyframes rightArmOut {
+    from { cx: 22; } /* size2 - arm_size2 - pad */
+    to { cx: 80; } /* 15.5 to get to edge + CELL_SIZE/2 */
+}
 @keyframes rightArmBack {
-    from { cx: 77.5; /* size2 - arm_size2 - pad */ }
+    from { cx: 80; /* size2 - arm_size2 - pad */ }
     to { cx: 22; }
+}
+
+@keyframes bottomArmOut {
+    from { cy: 22; } /* size2 - arm_size2 - pad */
+    to { cy: 80; } /* 15.5 to get to edge + CELL_SIZE/2 */
+}
+@keyframes bottomArmBack {
+    from { cy: 80; /* size2 - arm_size2 - pad */ }
+    to { cy: 22; }
+}
+
+@keyframes leftArmOut {
+    from { cx: -22; } /* size2 - arm_size2 - pad */
+    to { cx: -80; } /* 15.5 to get to edge + CELL_SIZE/2 */
+}
+@keyframes leftArmBack {
+    from { cx: -80; /* size2 - arm_size2 - pad */ }
+    to { cx: -22; }
 }
 
 html, body {
@@ -83,7 +109,7 @@ body {
         }
 
         .openCellCoin {
-            stroke: #FFD700; /* GOLD */;
+            stroke: #FFD700; /* GOLD */
             stroke-width: 3px;
             fill: transparent;
             cursor: pointer;
@@ -105,6 +131,28 @@ body {
             .coinArm.selected {
                 stroke: #444;   
             }
+            .coinArm.filled {
+                fill: #FFD700; /* GOLD */
+            }
+            .coinArm.deactive {
+                stroke-dasharray: 5;
+            }
+
+            .coinArm.topArmOut {
+                animation-name: topArmOut; 
+                animation-duration: 1s;
+                animation-timing-function: ease-in-out;
+                animation-iteration-count: 1;
+                animation-fill-mode: forwards;
+            }
+            .coinArm.topArmBack {
+                animation-name: topArmBack;
+                animation-duration: 1s;
+                animation-timing-function: ease-in-out;
+                animation-iteration-count: 1;
+                animation-fill-mode: forwards;
+            }
+
             .coinArm.rightArmOut {
                 animation-name: rightArmOut; 
                 animation-duration: 1s;
@@ -119,3 +167,33 @@ body {
                 animation-iteration-count: 1;
                 animation-fill-mode: forwards;
             }
+            
+            .coinArm.bottomArmOut {
+                animation-name: bottomArmOut; 
+                animation-duration: 1s;
+                animation-timing-function: ease-in-out;
+                animation-iteration-count: 1;
+                animation-fill-mode: forwards;
+            }
+            .coinArm.bottomArmBack {
+                animation-name: bottomArmBack;
+                animation-duration: 1s;
+                animation-timing-function: ease-in-out;
+                animation-iteration-count: 1;
+                animation-fill-mode: forwards;
+            }
+            
+            .coinArm.leftArmOut {
+                animation-name: leftArmOut; 
+                animation-duration: 1s;
+                animation-timing-function: ease-in-out;
+                animation-iteration-count: 1;
+                animation-fill-mode: forwards;
+            }
+            .coinArm.leftArmBack {
+                animation-name: leftArmBack;
+                animation-duration: 1s;
+                animation-timing-function: ease-in-out;
+                animation-iteration-count: 1;
+                animation-fill-mode: forwards;
+            }            

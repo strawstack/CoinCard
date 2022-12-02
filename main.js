@@ -58,32 +58,16 @@
         for (let r = 0; r < ROWS; r++) {
             let row = [];
             for (let c = 0; c < COLS; c++) {
-                let item = {
-                    type: "number",
-                    value: (Math.floor(Math.random() * 15) + 1), // 1 to 9
-                    ref: {
-                        text: null
-                    }
-                };
-                row.push(item);
+                row.push(newNumber());
             }
             grid.push(row);
         }
 
         // Add three open cells
         for (let i = 0; i < 3; i++) {
-            let index = Math.floor(Math.random() * 3);
-            let costs = [1, 3, 5];
             let r = Math.floor(Math.random() * ROWS);
             let c = Math.floor(Math.random() * COLS);
-            grid[r][c] = {
-                type: "open",
-                value: costs[index],
-                ref: {
-                    circle: null,
-                    text: null
-                }
-            };
+            grid[r][c] = newOpenCell();
         }
 
         // Create and place center machine
@@ -91,22 +75,9 @@
         const CENTER_COL = Math.floor(COLS/2);
 
         // TODO - remove debug settings
-        // grid[CENTER_ROW][CENTER_COL + 1].value = 1;
-
-        grid[CENTER_ROW][CENTER_COL] = {
-            type: "machine",
-            value: 0,
-            ref: {
-                text: null,
-                circle: null,
-                arm: {
-                    top: null,
-                    right: null,
-                    bottom: null,
-                    left: null
-                }
-            }
-        };
+        grid[CENTER_ROW][CENTER_COL + 1].value = 1;
+        
+        grid[CENTER_ROW][CENTER_COL] = newMachine(0);
 
         return grid;
     }

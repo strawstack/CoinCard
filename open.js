@@ -2,7 +2,7 @@ function openCellPurchase(ELEMS, grid, CONST, {col, row}) {
     destroy(grid, {col, row});
     grid[row][col] = newMachine(0);
     render(ELEMS, CONST, grid, {col, row});
-    p(grid)
+    notifyAdjOfCellChange(grid, {col, row});
 }
 function openCellClick(ELEMS, grid, CONST, {col, row}) {
     const cell = grid[row][col];

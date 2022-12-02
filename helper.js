@@ -2,16 +2,68 @@ function p(text) {
     console.log(text);
 }
 
+function getChangedCellDirection({notifiedCol, notifiedRow}, {col, row}) {
+    const dcol = col - notifiedCol;
+    const drow = row - notifiedRow;
+    if (dcol == 0) {
+        if (drow < 0) {
+            return "top";
+        } else { // drow > 0
+            return "bottom";
+        }
+    } else { // drow == 0
+        if (dcol < 0) {
+            return "left";
+        } else { // dcol > 0
+            return "right";
+        }
+    }
+}
+
+function notifyCellChange(grid, {col: notifiedCol, row: notifiedRow}, {col, row}) {
+    const notifiedCell = grid[notifiedRow][notifiedCol];
+    const changedCell =  grid[row][col];
+    const changedCellDir = getChangedCellDirection(
+        {notifiedCol, notifiedRow},
+        {col, row});
+    if (notifiedCell.type == "machine" && changedCell.type == "open") {
+        const arm = notifiedCell.ref.arm[changedCellDir];
+        if (arm.className.baseVal.indexOf(changedCellDir) == -1) { // Arm not animating
+            arm.setAttribute("class", `coinArm deactive`);
+            notifiedCell.data.arm[changedCellDir].active = false;
+        }
+    } else if (notifiedCell.type == "machine" && changedCell.type == "machine") {
+        const arm = notifiedCell.ref.arm[changedCellDir];
+        arm.setAttribute("class", `coinArm`);
+        notifiedCell.data.arm[changedCellDir].active = true;
+    }
+}
+
+function notifyAdjOfCellChange(grid, {col, row}) {
+    const offset = [
+        {col: 0, row: -1},
+        {col: 1, row: 0},
+        {col: 0, row: 1},
+        {col: -1, row: 0}
+    ];
+    for (let delta of offset) {
+        let otherCell = add({col, row}, delta);
+        notifyCellChange(grid, otherCell, {col, row});
+    }
+}
+
 function updateCoins(ELEMS, CONST, grid, {col, row}, coinValue) {
     const cell = grid[row][col];
     cell.value += coinValue;
     if (cell.value > 0) {
         cell.ref.text.textContent = decimalToHex(cell.value);
     } else {
-        // Replace with open cell
-        destroy(grid, {col, row});
-        grid[row][col] = newOpenCell();
-        renderOpen(ELEMS, CONST, grid, {col, row});
+        if (cell.type == "number") {
+            destroy(grid, {col, row});
+            grid[row][col] = newOpenCell();
+            renderOpen(ELEMS, CONST, grid, {col, row});
+            notifyAdjOfCellChange(grid, {col, row});
+        }
     }
 }
 
@@ -27,6 +79,16 @@ function createGroup({col, row}) {
     let g = document.createElementNS(svgns, "g");
     g.setAttribute("transform", `translate(${col}, ${row})`);
     return g;
+}
+
+function newNumber() {
+    return {
+        type: "number",
+        value: (Math.floor(Math.random() * 15) + 1), // 1 to 9
+        ref: {
+            text: null
+        }
+    };
 }
 
 function newOpenCell() {
@@ -46,6 +108,26 @@ function newMachine(value) {
     return {
         type: "machine",
         value: value,
+        data: {
+            arm: {
+                top: {
+                    active: true,
+                    moving: false
+                },
+                right: {
+                    active: true,
+                    moving: false
+                },
+                bottom: {
+                    active: true,
+                    moving: false
+                },
+                left: {
+                    active: true,
+                    moving: false
+                }
+            }
+        },
         ref: {
             text: null,
             circle: null,
@@ -65,6 +147,7 @@ function destroy(grid, {col, row}) {
             cell.ref.text.remove();
             break;
         case "machine":
+            p(cell)
             cell.ref.text.remove();
             cell.ref.circle.remove();
             cell.ref.arm.top.remove();

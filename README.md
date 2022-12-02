@@ -46,4 +46,6 @@ A simple game built with HTML and JS animated with CSS.
 - [ ] If a machine mines machine B, and B has zero coins, the cell becomes open. 
 - [ ] If a machine removes last coin from another machine cell incorrectly becomes open.
 - [ ] Clicking an open cell turns into a machine wihthout checking of decrementing coins.
-- [ ] Machine arm does not turn gold on return with coin.
+- [ ] When an arm causes a cell to become open it should check for an open cell once it gets back because it may have to become hidden.
+- [ ] Animation class on an arm should be removed when animation ends.
+- [ ] When an Open Cell is purchased it should notify sourrounding cells.
