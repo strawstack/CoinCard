@@ -4,6 +4,6 @@ function renderNumber({underlay}, {CELL_SIZE}, grid, {col, row}) {
         40 + CELL_SIZE * col,
         40 + CELL_SIZE * row,
         decimalToHex(grid[row][col].value));
-    grid[row][col].ref = text;
+    grid[row][col].ref.text = text;
     underlay.appendChild(text);
 }

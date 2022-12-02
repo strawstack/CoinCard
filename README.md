@@ -36,14 +36,7 @@ A simple game built with HTML and JS animated with CSS.
 
 # TODO
 
-- [ ] Time to refactor
-    - [ ] Write the ideal main class.
-    - [ ] Seperate Number, Open, Machine, and Notify into seperate files.
-    - [ ] Grid is the single source of truth.
-    - [ ] Notify is informed about events and dispatches instructions to cells.
-        - [ ] Cells listen to notify on creation.
 - [ ] When a cell becomes open, and calls notify, adj machines should hid related arm.
-- [ ] Machines should be able to take value from other machines.
 - [ ] When you click the center of a machine the menu should display.
 
 # Bugs
@@ -51,3 +44,6 @@ A simple game built with HTML and JS animated with CSS.
 - [ ] Machines can exist on the edge and mine off the board.
 - [ ] Machines can exist next to open cells and mine into "unpurchased" open cells. 
 - [ ] If a machine mines machine B, and B has zero coins, the cell becomes open. 
+- [ ] If a machine removes last coin from another machine cell incorrectly becomes open.
+- [ ] Clicking an open cell turns into a machine wihthout checking of decrementing coins.
+- [ ] Machine arm does not turn gold on return with coin.

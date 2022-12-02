@@ -69,7 +69,7 @@ body {
         }
         .textContainer.openCell {
             -webkit-text-stroke-color: #FFD700;
-            color: #FFEC86; /* GOLD_FILL */
+            color: white;
         }
 
     svg {
@@ -85,7 +85,7 @@ body {
         .openCellCoin {
             stroke: #FFD700; /* GOLD */;
             stroke-width: 3px;
-            fill: #FFEC86; /* GOLD_FILL */
+            fill: transparent;
             cursor: pointer;
         }
 

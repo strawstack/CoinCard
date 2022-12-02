@@ -2,11 +2,44 @@ function p(text) {
     console.log(text);
 }
 
+function updateCoins(ELEMS, CONST, grid, {col, row}, coinValue) {
+    const cell = grid[row][col];
+    cell.value += coinValue;
+    if (cell.value > 0) {
+        cell.ref.text.textContent = decimalToHex(cell.value);
+    } else {
+        // Replace with open cell
+        destroy(grid, {col, row});
+        grid[row][col] = newOpenCell();
+        renderOpen(ELEMS, CONST, grid, {col, row});
+    }
+}
+
+function add(a, b) {
+    return {
+        col: a.col + b.col,
+        row: a.row + b.row
+    };
+}
+
 function createGroup({col, row}) {
     const svgns = "http://www.w3.org/2000/svg";
     let g = document.createElementNS(svgns, "g");
     g.setAttribute("transform", `translate(${col}, ${row})`);
     return g;
+}
+
+function newOpenCell() {
+    let index = Math.floor(Math.random() * 3);
+    let costs = [1, 3, 5];
+    return {
+        type: "open",
+        value: costs[index],
+        ref: {
+            circle: null,
+            text: null
+        }
+    };
 }
 
 function newMachine(value) {
@@ -29,7 +62,7 @@ function destroy(grid, {col, row}) {
     const cell = grid[row][col];
     switch(cell.type) {
         case "number":
-            cell.ref.remove();
+            cell.ref.text.remove();
             break;
         case "machine":
             cell.ref.text.remove();
@@ -46,6 +79,16 @@ function destroy(grid, {col, row}) {
     }
 }
 
+function makeLine(x1, y1, x2, y2) {
+    const svgns = "http://www.w3.org/2000/svg";
+    let line = document.createElementNS(svgns, "line");
+    line.setAttribute("x1", x1);
+    line.setAttribute("y1", y1);
+    line.setAttribute("x2", x2);
+    line.setAttribute("y2", y2);
+    return line;
+}
+
 function createCircle(cx, cy, r) {
     const svgns = "http://www.w3.org/2000/svg";
     let circle = document.createElementNS(svgns, "circle");
@@ -60,13 +103,13 @@ function decimalToHex(decimalNum) {
     return hexLookup[decimalNum];
 }
 
-function makeText(CELL_SIZE, x, y, value, addClassName) {
+function makeText(CELL_SIZE, col, row, value, addClassName) {
     if (addClassName == undefined) {
         addClassName = "";
     }
     let text = document.createElement("div");
-    text.style.top = `${y - CELL_SIZE/2}px`;
-    text.style.left = `${x - CELL_SIZE/2}px`;
+    text.style.top = `${row - CELL_SIZE/2}px`;
+    text.style.left = `${col - CELL_SIZE/2}px`;
     text.style.width = `${CELL_SIZE}px`;
     text.style.height = `${CELL_SIZE}px`;
     text.textContent = value;

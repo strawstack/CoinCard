@@ -4,13 +4,13 @@ function openCellPurchase(ELEMS, grid, CONST, {col, row}) {
     render(ELEMS, CONST, grid, {col, row});
     p(grid)
 }
-function openCellAddClickHandle(ELEMS, grid, CONST, {col, row}) {
+function openCellClick(ELEMS, grid, CONST, {col, row}) {
     const cell = grid[row][col];
     cell.ref.circle.addEventListener("click", () => {   
         openCellPurchase(ELEMS, grid, CONST, {col, row});
     });
 }
-function createOpenCell(CELL_SIZE, grid, col, row) {
+function createOpenCell(CELL_SIZE, grid, {col, row}) {
     let circle = createCircle(
         CELL_SIZE/2 + CELL_SIZE * col,
         CELL_SIZE/2 + CELL_SIZE * row,
@@ -26,10 +26,10 @@ function createOpenCell(CELL_SIZE, grid, col, row) {
     return {circle, text};
 }
 function renderOpen(ELEMS, CONST, grid, {col, row}) {
-    let {circle, text} = createOpenCell(CONST.CELL_SIZE, grid, col, row);
+    let {circle, text} = createOpenCell(CONST.CELL_SIZE, grid, {col, row});
     grid[row][col].ref.circle = circle;
     grid[row][col].ref.text = text;
     ELEMS.svg.appendChild(circle);
     ELEMS.overlay.appendChild(text);
-    openCellAddClickHandle(ELEMS, grid, CONST, {col, row});
+    openCellClick(ELEMS, grid, CONST, {col, row});
 }
