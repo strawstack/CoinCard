@@ -103,17 +103,21 @@ function renderMachine(ELEMS, CONST, grid, {col, row}) {
     const outerCircle = createOuterCircle(0, 0, RING_SIZE/2);
     cell.ref.circle = outerCircle;
 
+    cell.ref.circle.addEventListener("click", () => {
+        console.log("circle click")
+    });
+
     cell.ref.arm.top    = createCoinArm(DATA, "top");
     cell.ref.arm.right  = createCoinArm(DATA, "right");
     cell.ref.arm.bottom = createCoinArm(DATA, "bottom");
-    cell.ref.arm.left   =  createCoinArm(DATA, "left");
+    cell.ref.arm.left   = createCoinArm(DATA, "left");
 
     cell.ref.arm.top.addEventListener("click", () => {
         if (!cell.data.arm.top.active || cell.data.arm.top.moving) return;
         cell.data.arm.top.moving = true;
         coinArmClick(ELEMS, CONST, DATA, grid, "top", cell.ref.arm.top, {col, row});
     });
-    cell.ref.arm.right.addEventListener("click", () => {
+    cell.ref.arm.right.addEventListener("click", (e) => {
         if (!cell.data.arm.right.active || cell.data.arm.right.moving) return;
         cell.data.arm.right.moving = true;
         coinArmClick(ELEMS, CONST, DATA, grid, "right", cell.ref.arm.right, {col, row});
@@ -130,7 +134,7 @@ function renderMachine(ELEMS, CONST, grid, {col, row}) {
     });
 
     ELEMS.svg.appendChild(group);
-    group.appendChild(outerCircle);
+    group.appendChild(cell.ref.circle);
     group.appendChild(cell.ref.arm.top);
     group.appendChild(cell.ref.arm.right);
     group.appendChild(cell.ref.arm.bottom);

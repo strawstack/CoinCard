@@ -68,6 +68,7 @@ body {
 
     .overlay {
         z-index: 10;
+        pointer-events: none;
     }
 
     .underlay {
@@ -119,15 +120,21 @@ body {
             stroke: #444;
             stroke-width: 3px;
             fill: transparent;
-            pointer-events: none;
         }
+            .outerCircle:hover {
+                fill: #EEE;
+                cursor: pointer;
+            }
 
         .coinArm {
             stroke: #CCC;
             stroke-width: 3px;
-            fill: transparent;
+            fill: white;
             cursor: pointer;
         }
+            .coinArm:hover {
+                fill: #EEE;
+            }
             .coinArm.selected {
                 stroke: #444;   
             }
