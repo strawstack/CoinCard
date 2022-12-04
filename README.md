@@ -37,7 +37,11 @@ A simple game built with HTML and JS animated with CSS.
 # TODO
 
 - [ ] When a cell becomes open, and calls notify, adj machines should hid related arm.
-- [ ] When you click the center of a machine the menu should display.
+- [ ] On menu display, menu functions should wire.
+- [ ] On menu close, menu functions should remove.
+- [ ] When any machine arm moves the others should disable (to prevent coin overflow in that machines storage).
+- [ ] When open cell is clicked, player's center machine coins should be checked, and subtracted if they have enough for purchase.
+- [ ] Center machine only should show F+ when player has more than F coins.
 
 # Bugs
 
