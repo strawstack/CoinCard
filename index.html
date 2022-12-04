@@ -4,13 +4,42 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>CoinCard</title>
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="main.css">
+        <link rel="stylesheet" href="menu.css">
     </head>
     <body>
         <div class="container">
             <div class="underlay"></div>
             <svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg"></svg>
             <div class="overlay"></div>
+            <div class="menu">
+                <div class="menuContents">
+                    <div class="titleContainer">
+                        <div class="titleArea">Machine</div>
+                        <div class="close">x</div>
+                    </div>
+                    <div class="controlArea">
+                        <div class="unpurchased">
+                            <div class="buyButtonContainer">
+                                <div class="buyButton">5</div>
+                            </div>
+                        </div>
+                        <div class="purchased">
+                            <div class="row">
+                                <div class="button"></div>
+                            </div>
+                            <div class="row">
+                                <div class="button"></div>
+                                <div class="switch">on</div>
+                                <div class="button"></div>
+                            </div>
+                            <div class="row">
+                                <div class="button"></div>
+                            </div>    
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <script src="helper.js"></script>

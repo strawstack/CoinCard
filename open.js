@@ -1,13 +1,13 @@
-function openCellPurchase(ELEMS, grid, CONST, {col, row}) {
+function openCellPurchase(ELEMS, STATE, grid, CONST, {col, row}) {
     destroy(grid, {col, row});
     grid[row][col] = newMachine(0);
-    render(ELEMS, CONST, grid, {col, row});
-    notifyAdjOfCellChange(grid, {col, row});
+    render(ELEMS, CONST, STATE, grid, {col, row});
+    notifyAdjOfCellChange(CONST, grid, {col, row});
 }
-function openCellClick(ELEMS, grid, CONST, {col, row}) {
+function openCellClick(ELEMS, STATE, grid, CONST, {col, row}) {
     const cell = grid[row][col];
     cell.ref.circle.addEventListener("click", () => {   
-        openCellPurchase(ELEMS, grid, CONST, {col, row});
+        openCellPurchase(ELEMS, STATE, grid, CONST, {col, row});
     });
 }
 function createOpenCell(CELL_SIZE, grid, {col, row}) {
@@ -25,11 +25,11 @@ function createOpenCell(CELL_SIZE, grid, {col, row}) {
         "openCell");
     return {circle, text};
 }
-function renderOpen(ELEMS, CONST, grid, {col, row}) {
+function renderOpen(ELEMS, CONST, STATE, grid, {col, row}) {
     let {circle, text} = createOpenCell(CONST.CELL_SIZE, grid, {col, row});
     grid[row][col].ref.circle = circle;
     grid[row][col].ref.text = text;
     ELEMS.svg.appendChild(circle);
     ELEMS.overlay.appendChild(text);
-    openCellClick(ELEMS, grid, CONST, {col, row});
+    openCellClick(ELEMS, STATE, grid, CONST, {col, row});
 }

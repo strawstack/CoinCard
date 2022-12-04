@@ -90,6 +90,15 @@
         const svg = document.querySelector("svg");
         const overlay = document.querySelector(".overlay");
         const ELEMS = {container, underlay, svg, overlay};
+        const STATE = {
+            menu: {
+                open: false,
+                cell_pos: null
+            },
+            ref: {
+                menu: null
+            }
+        };
 
         // Constants
         const CELL_SIZE = 80;
@@ -110,7 +119,7 @@
         
         for (let row = 0; row < ROWS; row++) {
             for (let col = 0; col < COLS; col++) {
-                render(ELEMS, CONST, grid, {col, row});
+                render(ELEMS, CONST, STATE, grid, {col, row});
             }
         }
     }

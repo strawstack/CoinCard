@@ -39,7 +39,11 @@ function notifyCellChange(grid, {col: notifiedCol, row: notifiedRow}, {col, row}
     }
 }
 
-function notifyAdjOfCellChange(grid, {col, row}) {
+function inBounds({ROWS, COLS}, {col, row}) {
+    return col >= 0 && col < COLS && row >= 0 && row < ROWS;
+}
+
+function notifyAdjOfCellChange(CONST, grid, {col, row}) {
     const offset = [
         {col: 0, row: -1},
         {col: 1, row: 0},
@@ -48,11 +52,13 @@ function notifyAdjOfCellChange(grid, {col, row}) {
     ];
     for (let delta of offset) {
         let otherCell = add({col, row}, delta);
-        notifyCellChange(grid, otherCell, {col, row});
+        if (inBounds(CONST, otherCell)) {
+            notifyCellChange(grid, otherCell, {col, row});
+        }
     }
 }
 
-function updateCoins(ELEMS, CONST, grid, {col, row}, coinValue) {
+function updateCoins(ELEMS, CONST, STATE, grid, {col, row}, coinValue) {
     const cell = grid[row][col];
     cell.value += coinValue;
     if (cell.value > 0) {
@@ -61,8 +67,8 @@ function updateCoins(ELEMS, CONST, grid, {col, row}, coinValue) {
         if (cell.type == "number") {
             destroy(grid, {col, row});
             grid[row][col] = newOpenCell();
-            renderOpen(ELEMS, CONST, grid, {col, row});
-            notifyAdjOfCellChange(grid, {col, row});
+            renderOpen(ELEMS, CONST, STATE, grid, {col, row});
+            notifyAdjOfCellChange(CONST, grid, {col, row});
         }
     }
 }
@@ -200,12 +206,12 @@ function makeText(CELL_SIZE, col, row, value, addClassName) {
     return text;
 }
 
-function render(ELEMS, CONST, grid, {col, row}) {
+function render(ELEMS, CONST, STATE, grid, {col, row}) {
     const cell = grid[row][col];
     const renderLookup = {
-        "machine": renderMachine,
-        "number": renderNumber,
-        "open": renderOpen
+        "machine": () => renderMachine(ELEMS, CONST, STATE, grid, {col, row}),
+        "number": () => renderNumber(ELEMS, CONST, grid, {col, row}),
+        "open": () => renderOpen(ELEMS, CONST, STATE, grid, {col, row})
     };
-    renderLookup[cell.type](ELEMS, CONST, grid, {col, row});
+    renderLookup[cell.type]();
 }

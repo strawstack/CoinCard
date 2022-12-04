@@ -49,3 +49,4 @@ A simple game built with HTML and JS animated with CSS.
 - [ ] When an arm causes a cell to become open it should check for an open cell once it gets back because it may have to become hidden.
 - [ ] Animation class on an arm should be removed when animation ends.
 - [ ] When an Open Cell is purchased it should notify sourrounding cells.
+- [ ] When a new machine is created from open cell, arms are not disabled if there is an existing adj open cell next to the newly created machine.

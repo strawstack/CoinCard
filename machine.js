@@ -1,4 +1,33 @@
-function extractCoins(ELEMS, CONST, DATA, grid, {col, row}) {
+function clickedCellOwnsMenu(STATE, {col, row}) {
+    return STATE.menu.open && 
+        STATE.menu.cell_pos.row == row && 
+        STATE.menu.cell_pos.col == col;
+}
+
+function openMenu(STATE, grid, {col, row}) {
+    
+}
+
+function closeMenu(STATE, grid, {col, row}) {
+    // NOTE: remove all event listeners: box.replaceWith(box.cloneNode(true));
+}
+
+function toggleMenu(ELEMS, STATE, grid, {col, row}) {
+    const cell = grid[row][col];
+    if (!STATE.menu.open) { // menu not open, then open
+        openMenu(ELEMS, STATE, grid, {col, row});
+
+    // Open and owned then close
+    } else if (clickedCellOwnsMenu(STATE, {col, row})) {
+        closeMenu(ELEMS, STATE, grid, {col, row});
+
+    } else { // Open, but not owned, switch menu
+        closeMenu(ELEMS, STATE, grid, {col, row});
+        openMenu(ELEMS, STATE, grid, {col, row});
+    }
+}
+
+function extractCoins(ELEMS, CONST, STATE, DATA, grid, {col, row}) {
     const cell = grid[row][col];
     let numCoins = cell.value;
     if (cell.type === "number") {
@@ -6,11 +35,11 @@ function extractCoins(ELEMS, CONST, DATA, grid, {col, row}) {
     }
     const coinSpace = DATA.MAX_COINS - cell.value;
     const removeCoins = Math.min(coinSpace, numCoins);
-    updateCoins(ELEMS, CONST, grid, {col, row}, -1 * removeCoins);
+    updateCoins(ELEMS, CONST, STATE, grid, {col, row}, -1 * removeCoins);
     return removeCoins;
 }
 
-function coinArmClick(ELEMS, CONST, DATA, grid, direction, ref, {col, row}) {
+function coinArmClick(ELEMS, CONST, STATE, DATA, grid, direction, ref, {col, row}) {
     const cell = grid[row][col];
     const offsetLookup = {
         "top": {col: 0, row: -1},
@@ -32,13 +61,13 @@ function coinArmClick(ELEMS, CONST, DATA, grid, direction, ref, {col, row}) {
     setTimeout(() => {
         const targetCellPos = add({col, row}, offset);
         const {col: tcol, row: trow} = targetCellPos;
-        let coins = extractCoins(ELEMS, CONST, DATA, grid, targetCellPos);
+        let coins = extractCoins(ELEMS, CONST, STATE, DATA, grid, targetCellPos);
         let BASE_CLASS = "coinArm";
         let isFilled = (coins > 0) ? "filled" : "";
         ref.setAttribute("class", `${BASE_CLASS} ${className.back} ${isFilled}`);
 
         setTimeout(() => {
-            updateCoins(ELEMS, CONST, grid, {col, row}, coins);
+            updateCoins(ELEMS, CONST, STATE, grid, {col, row}, coins);
             const targetCell = grid[trow][tcol];
             let isActiveClass = (targetCell.type == "open") ? "deactive" : "";
             ref.setAttribute("class", `${BASE_CLASS} ${isActiveClass}`);
@@ -84,7 +113,7 @@ function createCoinStore(DATA, CELL_SIZE) {
     return text;
 }
 
-function renderMachine(ELEMS, CONST, grid, {col, row}) {
+function renderMachine(ELEMS, CONST, STATE, grid, {col, row}) {
 
     const cell = grid[row][col];
 
@@ -104,7 +133,7 @@ function renderMachine(ELEMS, CONST, grid, {col, row}) {
     cell.ref.circle = outerCircle;
 
     cell.ref.circle.addEventListener("click", () => {
-        console.log("circle click")
+        toggleMenu(ELEMS, STATE, grid, {col, row});
     });
 
     cell.ref.arm.top    = createCoinArm(DATA, "top");
@@ -115,22 +144,22 @@ function renderMachine(ELEMS, CONST, grid, {col, row}) {
     cell.ref.arm.top.addEventListener("click", () => {
         if (!cell.data.arm.top.active || cell.data.arm.top.moving) return;
         cell.data.arm.top.moving = true;
-        coinArmClick(ELEMS, CONST, DATA, grid, "top", cell.ref.arm.top, {col, row});
+        coinArmClick(ELEMS, CONST, STATE, DATA, grid, "top", cell.ref.arm.top, {col, row});
     });
     cell.ref.arm.right.addEventListener("click", (e) => {
         if (!cell.data.arm.right.active || cell.data.arm.right.moving) return;
         cell.data.arm.right.moving = true;
-        coinArmClick(ELEMS, CONST, DATA, grid, "right", cell.ref.arm.right, {col, row});
+        coinArmClick(ELEMS, CONST, STATE, DATA, grid, "right", cell.ref.arm.right, {col, row});
     });
     cell.ref.arm.bottom.addEventListener("click", () => {
         if (!cell.data.arm.bottom.active || cell.data.arm.bottom.moving) return;
         cell.data.arm.bottom.moving = true;
-        coinArmClick(ELEMS, CONST, DATA, grid, "bottom", cell.ref.arm.bottom, {col, row});
+        coinArmClick(ELEMS, CONST, STATE, DATA, grid, "bottom", cell.ref.arm.bottom, {col, row});
     });
     cell.ref.arm.left.addEventListener("click", () => {
         if (!cell.data.arm.left.active || cell.data.arm.left.moving) return;
         cell.data.arm.left.moving = true;
-        coinArmClick(ELEMS, CONST, DATA, grid, "left", cell.ref.arm.left, {col, row});
+        coinArmClick(ELEMS, CONST, STATE, DATA, grid, "left", cell.ref.arm.left, {col, row});
     });
 
     ELEMS.svg.appendChild(group);
