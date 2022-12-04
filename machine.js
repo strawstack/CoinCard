@@ -45,6 +45,7 @@ function extractCoins(ELEMS, CONST, STATE, DATA, grid, {col, row}) {
 
 function coinArmClick(ELEMS, CONST, STATE, DATA, grid, direction, ref, {col, row}) {
     const cell = grid[row][col];
+    otherArmsDeactive(cell, direction);
     const offsetLookup = {
         "top": {col: 0, row: -1},
         "right": {col: 1, row: 0},
@@ -77,6 +78,8 @@ function coinArmClick(ELEMS, CONST, STATE, DATA, grid, direction, ref, {col, row
             ref.setAttribute("class", `${BASE_CLASS} ${isActiveClass}`);
             cell.data.arm[direction].active = targetCell.type != "open";
             cell.data.arm[direction].moving = false;
+            armsActive(cell);
+            resetArms(CONST, grid, {col, row});
         }, 1000);
 
         if (coins == 0) {
@@ -117,6 +120,42 @@ function createCoinStore(DATA, CELL_SIZE) {
     return text;
 }
 
+function otherArmsDeactive(cell, activeArm) {
+    const arms = ["top", "right", "bottom", "left"];
+    for (let armName of arms) {
+        if (armName != activeArm) {
+            cell.data.arm[armName].active = false;
+            cell.ref.arm[armName].setAttribute("class", "coinArm deactive");
+        }
+    }
+}
+
+function armsActive(cell) {
+    const arms = ["top", "right", "bottom", "left"];
+    for (let armName of arms) {
+        cell.data.arm[armName].active = true;
+        cell.ref.arm[armName].setAttribute("class", "coinArm");
+    }
+}
+
+function resetArms(CONST, grid, {col, row}) {
+    const cell = grid[row][col];
+    const adj = [
+        {col: 0, row: -1, otherArmName: "top"},
+        {col: 1, row: 0, otherArmName: "right"},
+        {col: 0, row: 1, otherArmName: "bottom"},
+        {col: -1, row: 0, otherArmName: "left"}
+    ];
+    for (let d of adj) {
+        let tCellPos = add({col, row}, d);
+        if (!inBounds(CONST, tCellPos) || 
+        grid[tCellPos.row][tCellPos.col].type == "open") {
+            cell.data.arm[d.otherArmName].active = false;
+            cell.ref.arm[d.otherArmName].setAttribute("class", "coinArm deactive");
+        }
+    }
+}
+
 function renderMachine(ELEMS, CONST, STATE, grid, {col, row}) {
 
     const cell = grid[row][col];
@@ -144,6 +183,8 @@ function renderMachine(ELEMS, CONST, STATE, grid, {col, row}) {
     cell.ref.arm.right  = createCoinArm(DATA, "right");
     cell.ref.arm.bottom = createCoinArm(DATA, "bottom");
     cell.ref.arm.left   = createCoinArm(DATA, "left");
+
+    resetArms(CONST, grid, {col, row});
 
     cell.ref.arm.top.addEventListener("click", () => {
         if (!cell.data.arm.top.active || cell.data.arm.top.moving) return;

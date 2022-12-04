@@ -101,7 +101,11 @@
         // Constants
         const CELL_SIZE = 80;
         const { WIDTH, HEIGHT, ROWS, COLS } = getDocumentBodySizeAsMultipleOf(CELL_SIZE);
-        const CONST = { CELL_SIZE, WIDTH, HEIGHT, ROWS, COLS };
+        const CENTER = {
+            col: Math.floor(COLS/2), 
+            row: Math.floor(ROWS/2)
+        };
+        const CONST = { CELL_SIZE, WIDTH, HEIGHT, ROWS, COLS, CENTER };
 
         // Draw grid lines
         drawGridLines(ELEMS, CONST);
@@ -120,6 +124,8 @@
                 render(ELEMS, CONST, STATE, grid, {col, row});
             }
         }
+
+        grid[CENTER.row][CENTER.col].ref.circle.setAttribute("class", "outerCircle centerMachine");
 
         // Handle click for menu close
         document.querySelector(".menu .close").addEventListener("click", () => {
