@@ -4,25 +4,29 @@ function clickedCellOwnsMenu(STATE, {col, row}) {
         STATE.menu.cell_pos.col == col;
 }
 
-function openMenu(STATE, grid, {col, row}) {
-    
+function openMenu({ menu: menuRef }, { menu: menuState }, grid, {col, row}) {
+    menuRef.style.display = "inline-block";
+    menuState.open = true;
+    menuState.cell_pos = {col, row};
 }
 
-function closeMenu(STATE, grid, {col, row}) {
+function closeMenu({ menu: menuRef }, { menu: menuState }) {
     // NOTE: remove all event listeners: box.replaceWith(box.cloneNode(true));
+    menuRef.style.display = "none";
+    menuState.open = false;
+    menuState.cell_pos = null;
 }
 
 function toggleMenu(ELEMS, STATE, grid, {col, row}) {
-    const cell = grid[row][col];
     if (!STATE.menu.open) { // menu not open, then open
         openMenu(ELEMS, STATE, grid, {col, row});
 
     // Open and owned then close
     } else if (clickedCellOwnsMenu(STATE, {col, row})) {
-        closeMenu(ELEMS, STATE, grid, {col, row});
+        closeMenu(ELEMS, STATE);
 
     } else { // Open, but not owned, switch menu
-        closeMenu(ELEMS, STATE, grid, {col, row});
+        closeMenu(ELEMS, STATE);
         openMenu(ELEMS, STATE, grid, {col, row});
     }
 }

@@ -69,11 +69,13 @@ body {
     .overlay {
         z-index: 10;
         pointer-events: none;
+        user-select: none;
     }
 
     .underlay {
         z-index: 0;
         background: white;
+        user-select: none;
     }
 
         .textContainer {

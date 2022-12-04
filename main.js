@@ -89,14 +89,12 @@
         const underlay = document.querySelector(".underlay");
         const svg = document.querySelector("svg");
         const overlay = document.querySelector(".overlay");
-        const ELEMS = {container, underlay, svg, overlay};
+        const menu = document.querySelector(".menu");
+        const ELEMS = {container, underlay, svg, overlay, menu};
         const STATE = {
             menu: {
                 open: false,
                 cell_pos: null
-            },
-            ref: {
-                menu: null
             }
         };
 
@@ -122,6 +120,11 @@
                 render(ELEMS, CONST, STATE, grid, {col, row});
             }
         }
+
+        // Handle click for menu close
+        document.querySelector(".menu .close").addEventListener("click", () => {
+            closeMenu(ELEMS, STATE);
+        });
     }
 
     main();
