@@ -28,6 +28,7 @@ function notifyCellChange(grid, {col: notifiedCol, row: notifiedRow}, {col, row}
         {col, row});
     if (notifiedCell.type == "machine" && changedCell.type == "open") {
         const arm = notifiedCell.ref.arm[changedCellDir];
+        notifiedCell.data.auto.waiting.state = true;
         if (arm.className.baseVal.indexOf(changedCellDir) == -1) { // Arm not animating
             arm.setAttribute("class", `coinArm deactive`);
             notifiedCell.data.arm[changedCellDir].active = false;
@@ -36,6 +37,10 @@ function notifyCellChange(grid, {col: notifiedCol, row: notifiedRow}, {col, row}
         const arm = notifiedCell.ref.arm[changedCellDir];
         arm.setAttribute("class", `coinArm`);
         notifiedCell.data.arm[changedCellDir].active = true;
+        if (changedCell.value > 0) {
+            notifiedCell.data.auto.waiting.state = false;
+            notifiedCell.data.auto.waiting.callback();
+        }
     }
 }
 
@@ -116,7 +121,11 @@ function newMachine(value) {
                 purchased: false,
                 active: false,
                 direction: "right",
-                waiting: false
+                waiting: {
+                    state: false,
+                    callback: () => {}
+                },
+
             },
             arm: {
                 top: {

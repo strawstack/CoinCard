@@ -72,6 +72,12 @@ function openMenu(ELEMS, CONST, STATE, DATA, grid, {col, row}) {
         cell.data.auto.direction = e.target.dataset.direction;
         buttonIndex = buttonLookup[cell.data.auto.direction];
         buttonList[buttonIndex].className = "button selected";
+        cell.data.auto.waiting.state = false;
+        cell.data.auto.waiting.callback = () => {
+            coinArmClick(ELEMS, CONST, STATE, DATA, 
+                grid, cell.data.auto.direction, 
+                cell.ref.arm[cell.data.auto.direction], {col, row});
+        };
     };
     for (let button of buttonList) {
         button.addEventListener("click", menuAutoButtonClick);
@@ -161,7 +167,7 @@ function coinArmClick(ELEMS, CONST, STATE, DATA, grid, direction, ref, {col, row
         setTimeout(() => {
             updateCoins(ELEMS, CONST, STATE, grid, {col, row}, coins);
             if (coins == 0) {
-                cell.data.auto.waiting = true;
+                cell.data.auto.waiting.state = true;
             }
             const targetCell = grid[trow][tcol];
             let isActiveClass = (targetCell.type == "open") ? "deactive" : "";
@@ -170,7 +176,7 @@ function coinArmClick(ELEMS, CONST, STATE, DATA, grid, direction, ref, {col, row
             cell.data.arm[direction].moving = false;
             armsActive(cell);
             resetArms(CONST, grid, {col, row});
-            if (cell.data.auto.active && !cell.data.auto.waiting) {
+            if (cell.data.auto.active && !cell.data.auto.waiting.state) {
                 coinArmClick(ELEMS, CONST, STATE, DATA, 
                     grid, cell.data.auto.direction, 
                     cell.ref.arm[cell.data.auto.direction], {col, row});
@@ -276,6 +282,13 @@ function renderMachine(ELEMS, CONST, STATE, grid, {col, row}) {
 
     resetArms(CONST, grid, {col, row});
 
+    // Default waiting state callback
+    cell.data.auto.waiting.callback = () => {
+        coinArmClick(ELEMS, CONST, STATE, DATA, 
+            grid, cell.data.auto.direction, 
+            cell.ref.arm[cell.data.auto.direction], {col, row});
+    };
+    
     cell.ref.arm.top.addEventListener("click", () => {
         if (!cell.data.arm.top.active || 
             cell.data.arm.top.moving || 

@@ -55,3 +55,6 @@ A simple game built with HTML and JS animated with CSS.
 - [ ] When an Open Cell is purchased it should notify sourrounding cells.
 - [ ] When a new machine is created from open cell, arms are not disabled if there is an existing adj open cell next to the newly created machine.
 - [ ] Sending an arm to mine a cell that becomes open as the arm travels out mins the "cost" for the open cell. Arm should instead detect cell is open on arrival and return empty
+- [ ] When auto is active make sure to dash the arms to indicate they can't be selected
+    - [ ] Active arm is gold solid, but dashed when waiting
+- [ ] When auto is turned and the given direction faces an open cell, the arm still goes 

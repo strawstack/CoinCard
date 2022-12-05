@@ -1,3 +1,4 @@
+let grid;
 (() => {
 
     function getDocumentBodySize() {
@@ -111,7 +112,7 @@
         drawGridLines(ELEMS, CONST);
 
         // Variables
-        let grid = makeGrid(ROWS, COLS);
+        grid = makeGrid(ROWS, COLS);
         
         // Fill screen with SVG, and overlay
         container.style.width = `${WIDTH}px`;
