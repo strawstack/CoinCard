@@ -112,7 +112,12 @@ function newMachine(value) {
         type: "machine",
         value: value,
         data: {
-            hasAuto: false,
+            auto: {
+                purchased: false,
+                active: false,
+                direction: "right",
+                waiting: false
+            },
             arm: {
                 top: {
                     active: true,

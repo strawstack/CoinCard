@@ -4,29 +4,78 @@ function clickedCellOwnsMenu(STATE, {col, row}) {
         STATE.menu.cell_pos.col == col;
 }
 
-// NOTE: Don't remove. Adds menuClick to global name space for later removal
-function menuClick() {}
+function anyArmMoving(cell) {
+    let dir = ["top", "right", "bottom", "left"];
+    for (let d of dir) {
+        if (cell.data.arm[d].moving) {
+            return true;
+        }
+    }
+    return false;
+}
 
-function openMenu(ELEMS, STATE, grid, {col, row}) {
+// NOTE: Don't remove. Adds menu click to global name space for help with later removal
+function menuBuyButtonClick() {}
+function menuSwitchClick() {}
+function menuAutoButtonClick() {}
+
+function openMenu(ELEMS, CONST, STATE, DATA, grid, {col, row}) {
     const cell = grid[row][col];
     const menuRef = ELEMS.menu;
     const menuState = STATE.menu;
 
-    if (cell.data.hasAuto) {
+    if (cell.data.auto.purchased) {
         menuRef.querySelector(".purchased").style.display = "grid";
         menuRef.querySelector(".unpurchased").style.display = "none";
+        let a = cell.data.auto.active;
+        menuRef.querySelector(".switch").textContent = (a) ? "on" : "off";
     } else {
         menuRef.querySelector(".purchased").style.display = "none";
         menuRef.querySelector(".unpurchased").style.display = "grid";
     }
-    
-    // Override global menuClick function (requires global for later removal) 
-    menuClick = () => {
-        cell.data.hasAuto = true;
+
+    // ADD: menu Click listeners
+    menuBuyButtonClick = () => {
+        cell.data.auto.purchased = true;
         closeMenu(ELEMS, STATE);
-        openMenu(ELEMS, STATE, grid, {col, row});
+        openMenu(ELEMS, CONST, STATE, DATA, grid, {col, row});
     };
-    menuRef.querySelector(".buyButton").addEventListener("click", menuClick);
+    menuRef.querySelector(".buyButton").addEventListener("click", menuBuyButtonClick);
+    
+    menuSwitchClick = () => {
+        cell.data.auto.active = !cell.data.auto.active;
+        let a = cell.data.auto.active;
+        menuRef.querySelector(".switch").textContent = (a) ? "on" : "off";
+        if (a && !anyArmMoving(cell)) {
+            const cell = grid[row][col];
+            const direction = cell.data.auto.direction;
+            coinArmClick(ELEMS, CONST, STATE, DATA,
+                grid, direction, cell.ref.arm[direction], {col, row});
+        }
+    };
+    menuRef.querySelector(".switch").addEventListener("click", menuSwitchClick);
+
+    // Highlight current direction
+    const buttonLookup = {
+        "top": 0,
+        "right": 2,
+        "bottom": 3,
+        "left": 1
+    };
+    let buttonIndex = buttonLookup[cell.data.auto.direction];
+    const buttonList = menuRef.querySelectorAll(`.button`);
+    buttonList[buttonIndex].className = "button selected";
+    menuAutoButtonClick = (e) => {
+        for (let button of buttonList) {
+            button.className = "button";
+        }
+        cell.data.auto.direction = e.target.dataset.direction;
+        buttonIndex = buttonLookup[cell.data.auto.direction];
+        buttonList[buttonIndex].className = "button selected";
+    };
+    for (let button of buttonList) {
+        button.addEventListener("click", menuAutoButtonClick);
+    }
 
     menuRef.style.display = "inline-block";
     menuState.open = true;
@@ -37,12 +86,20 @@ function closeMenu({ menu: menuRef }, { menu: menuState }) {
     menuRef.style.display = "none";
     menuState.open = false;
     menuState.cell_pos = null;
-    menuRef.querySelector(".buyButton").removeEventListener("click", menuClick);
+
+    // REMOVE: menu Click listeners
+    menuRef.querySelector(".buyButton").removeEventListener("click", menuBuyButtonClick);
+    menuRef.querySelector(".switch").removeEventListener("click", menuSwitchClick);
+    const buttonList = menuRef.querySelectorAll(`.button`);
+    for (let button of buttonList) {
+        button.className = "button";
+        button.removeEventListener("click", menuAutoButtonClick);
+    }
 }
 
-function toggleMenu(ELEMS, STATE, grid, {col, row}) {
+function toggleMenu(ELEMS, CONST, STATE, DATA, grid, {col, row}) {
     if (!STATE.menu.open) { // menu not open, then open
-        openMenu(ELEMS, STATE, grid, {col, row});
+        openMenu(ELEMS, CONST, STATE, DATA, grid, {col, row});
 
     // Open and owned then close
     } else if (clickedCellOwnsMenu(STATE, {col, row})) {
@@ -50,7 +107,7 @@ function toggleMenu(ELEMS, STATE, grid, {col, row}) {
 
     } else { // Open, but not owned, switch menu
         closeMenu(ELEMS, STATE);
-        openMenu(ELEMS, STATE, grid, {col, row});
+        openMenu(ELEMS, CONST, STATE, DATA, grid, {col, row});
     }
 }
 
@@ -103,6 +160,9 @@ function coinArmClick(ELEMS, CONST, STATE, DATA, grid, direction, ref, {col, row
 
         setTimeout(() => {
             updateCoins(ELEMS, CONST, STATE, grid, {col, row}, coins);
+            if (coins == 0) {
+                cell.data.auto.waiting = true;
+            }
             const targetCell = grid[trow][tcol];
             let isActiveClass = (targetCell.type == "open") ? "deactive" : "";
             ref.setAttribute("class", `${BASE_CLASS} ${isActiveClass}`);
@@ -110,12 +170,12 @@ function coinArmClick(ELEMS, CONST, STATE, DATA, grid, direction, ref, {col, row
             cell.data.arm[direction].moving = false;
             armsActive(cell);
             resetArms(CONST, grid, {col, row});
+            if (cell.data.auto.active && !cell.data.auto.waiting) {
+                coinArmClick(ELEMS, CONST, STATE, DATA, 
+                    grid, cell.data.auto.direction, 
+                    cell.ref.arm[cell.data.auto.direction], {col, row});
+            }
         }, 1000);
-
-        if (coins == 0) {
-            // TODO - enter the queue
-
-        }
     }, 1000);
 }
 
@@ -206,7 +266,7 @@ function renderMachine(ELEMS, CONST, STATE, grid, {col, row}) {
     cell.ref.circle = outerCircle;
 
     cell.ref.circle.addEventListener("click", () => {
-        toggleMenu(ELEMS, STATE, grid, {col, row});
+        toggleMenu(ELEMS, CONST, STATE, DATA, grid, {col, row});
     });
 
     cell.ref.arm.top    = createCoinArm(DATA, "top");
@@ -217,24 +277,36 @@ function renderMachine(ELEMS, CONST, STATE, grid, {col, row}) {
     resetArms(CONST, grid, {col, row});
 
     cell.ref.arm.top.addEventListener("click", () => {
-        if (!cell.data.arm.top.active || cell.data.arm.top.moving) return;
+        if (!cell.data.arm.top.active || 
+            cell.data.arm.top.moving || 
+            cell.data.auto.active) return;
         cell.data.arm.top.moving = true;
-        coinArmClick(ELEMS, CONST, STATE, DATA, grid, "top", cell.ref.arm.top, {col, row});
+        coinArmClick(ELEMS, CONST, STATE, DATA, 
+            grid, "top", cell.ref.arm.top, {col, row});
     });
     cell.ref.arm.right.addEventListener("click", (e) => {
-        if (!cell.data.arm.right.active || cell.data.arm.right.moving) return;
+        if (!cell.data.arm.right.active || 
+            cell.data.arm.right.moving || 
+            cell.data.auto.active) return;
         cell.data.arm.right.moving = true;
-        coinArmClick(ELEMS, CONST, STATE, DATA, grid, "right", cell.ref.arm.right, {col, row});
+        coinArmClick(ELEMS, CONST, STATE, DATA, 
+            grid, "right", cell.ref.arm.right, {col, row});
     });
     cell.ref.arm.bottom.addEventListener("click", () => {
-        if (!cell.data.arm.bottom.active || cell.data.arm.bottom.moving) return;
+        if (!cell.data.arm.bottom.active || 
+            cell.data.arm.bottom.moving || 
+            cell.data.auto.active) return;
         cell.data.arm.bottom.moving = true;
-        coinArmClick(ELEMS, CONST, STATE, DATA, grid, "bottom", cell.ref.arm.bottom, {col, row});
+        coinArmClick(ELEMS, CONST, STATE, DATA, 
+            grid, "bottom", cell.ref.arm.bottom, {col, row});
     });
     cell.ref.arm.left.addEventListener("click", () => {
-        if (!cell.data.arm.left.active || cell.data.arm.left.moving) return;
+        if (!cell.data.arm.left.active || 
+            cell.data.arm.left.moving || 
+            cell.data.auto.active) return;
         cell.data.arm.left.moving = true;
-        coinArmClick(ELEMS, CONST, STATE, DATA, grid, "left", cell.ref.arm.left, {col, row});
+        coinArmClick(ELEMS, CONST, STATE, DATA, 
+            grid, "left", cell.ref.arm.left, {col, row});
     });
 
     ELEMS.svg.appendChild(group);

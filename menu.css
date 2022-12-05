@@ -109,6 +109,10 @@
                                 background: #EEE;
                             }
 
+                            .row .button.selected {
+                                background: #FFEC86; /* GOLD FILL */
+                            }
+
                 .controlArea .unpurchased .buyButtonContainer {
                     grid-row: 1 / 4;
                     display: flex;
