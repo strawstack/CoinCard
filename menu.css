@@ -1,3 +1,4 @@
+/* #FFEC86; /* GOLD FILL */
 .menu {
     display: none;
     position: absolute;
@@ -118,7 +119,7 @@
                     .buyButtonContainer .buyButton {
                         height: 120px;
                         width: 120px;
-                        background: #FFEC86; /* GOLD FILL */
+                        background: white;
                         border-radius: 50%;
                         border: 3px solid #FFD700; /* GOLD */
                         display: flex;
@@ -127,13 +128,13 @@
                         font-size: 3rem;
                         font-weight: bold;
                         color: white;
-                        -webkit-text-stroke: 3px #444;
+                        -webkit-text-stroke: 3px #FFD700; /* GOLD */
+                        user-select: none;
                     }
 
                         .buyButtonContainer .buyButton:hover {
                             cursor: pointer;
-                            background: #FFD700;
-                            border: 3px solid #444; 
+                            background: #FFEC86; /* GOLD FILL */
                         }
 
 /*

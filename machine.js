@@ -4,17 +4,40 @@ function clickedCellOwnsMenu(STATE, {col, row}) {
         STATE.menu.cell_pos.col == col;
 }
 
-function openMenu({ menu: menuRef }, { menu: menuState }, grid, {col, row}) {
+// NOTE: Don't remove. Adds menuClick to global name space for later removal
+function menuClick() {}
+
+function openMenu(ELEMS, STATE, grid, {col, row}) {
+    const cell = grid[row][col];
+    const menuRef = ELEMS.menu;
+    const menuState = STATE.menu;
+
+    if (cell.data.hasAuto) {
+        menuRef.querySelector(".purchased").style.display = "grid";
+        menuRef.querySelector(".unpurchased").style.display = "none";
+    } else {
+        menuRef.querySelector(".purchased").style.display = "none";
+        menuRef.querySelector(".unpurchased").style.display = "grid";
+    }
+    
+    // Override global menuClick function (requires global for later removal) 
+    menuClick = () => {
+        cell.data.hasAuto = true;
+        closeMenu(ELEMS, STATE);
+        openMenu(ELEMS, STATE, grid, {col, row});
+    };
+    menuRef.querySelector(".buyButton").addEventListener("click", menuClick);
+
     menuRef.style.display = "inline-block";
     menuState.open = true;
     menuState.cell_pos = {col, row};
 }
 
 function closeMenu({ menu: menuRef }, { menu: menuState }) {
-    // NOTE: remove all event listeners: box.replaceWith(box.cloneNode(true));
     menuRef.style.display = "none";
     menuState.open = false;
     menuState.cell_pos = null;
+    menuRef.querySelector(".buyButton").removeEventListener("click", menuClick);
 }
 
 function toggleMenu(ELEMS, STATE, grid, {col, row}) {
@@ -31,13 +54,18 @@ function toggleMenu(ELEMS, STATE, grid, {col, row}) {
     }
 }
 
-function extractCoins(ELEMS, CONST, STATE, DATA, grid, {col, row}) {
+function extractCoins(ELEMS, CONST, STATE, DATA, grid, 
+    {col, row}, {col: reqCol, row: reqRow}) {
     const cell = grid[row][col];
+    const reqCell = grid[reqRow][reqCol];
     let numCoins = cell.value;
     if (cell.type === "number") {
         numCoins = Math.min(numCoins, 1);
     }
-    const coinSpace = DATA.MAX_COINS - cell.value;
+    let coinSpace = DATA.MAX_COINS - reqCell.value;
+    if (reqCol == CONST.CENTER.col && reqRow == CONST.CENTER.row) {
+        coinSpace = Infinity;
+    }
     const removeCoins = Math.min(coinSpace, numCoins);
     updateCoins(ELEMS, CONST, STATE, grid, {col, row}, -1 * removeCoins);
     return removeCoins;
@@ -66,7 +94,9 @@ function coinArmClick(ELEMS, CONST, STATE, DATA, grid, direction, ref, {col, row
     setTimeout(() => {
         const targetCellPos = add({col, row}, offset);
         const {col: tcol, row: trow} = targetCellPos;
-        let coins = extractCoins(ELEMS, CONST, STATE, DATA, grid, targetCellPos);
+        let coins = extractCoins(ELEMS, CONST, STATE, DATA, grid, 
+            targetCellPos, {col, row}
+        );
         let BASE_CLASS = "coinArm";
         let isFilled = (coins > 0) ? "filled" : "";
         ref.setAttribute("class", `${BASE_CLASS} ${className.back} ${isFilled}`);

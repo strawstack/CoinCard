@@ -54,3 +54,4 @@ A simple game built with HTML and JS animated with CSS.
 - [ ] Animation class on an arm should be removed when animation ends.
 - [ ] When an Open Cell is purchased it should notify sourrounding cells.
 - [ ] When a new machine is created from open cell, arms are not disabled if there is an existing adj open cell next to the newly created machine.
+- [ ] Sending an arm to mine a cell that becomes open as the arm travels out mins the "cost" for the open cell. Arm should instead detect cell is open on arrival and return empty

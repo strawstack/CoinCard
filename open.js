@@ -1,4 +1,6 @@
 function openCellPurchase(ELEMS, STATE, grid, CONST, {col, row}) {
+    const cell = grid[row][col];
+    updateCoins(ELEMS, CONST, STATE, grid, CONST.CENTER, -1 * cell.value);
     destroy(grid, {col, row});
     grid[row][col] = newMachine(0);
     render(ELEMS, CONST, STATE, grid, {col, row});
@@ -6,8 +8,11 @@ function openCellPurchase(ELEMS, STATE, grid, CONST, {col, row}) {
 }
 function openCellClick(ELEMS, STATE, grid, CONST, {col, row}) {
     const cell = grid[row][col];
-    cell.ref.circle.addEventListener("click", () => {   
-        openCellPurchase(ELEMS, STATE, grid, CONST, {col, row});
+    cell.ref.circle.addEventListener("click", () => {
+        const centerCoins = grid[CONST.CENTER.row][CONST.CENTER.col].value;
+        if (cell.value <= centerCoins) {
+            openCellPurchase(ELEMS, STATE, grid, CONST, {col, row});
+        }
     });
 }
 function createOpenCell(CELL_SIZE, grid, {col, row}) {

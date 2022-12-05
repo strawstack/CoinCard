@@ -61,15 +61,12 @@ function notifyAdjOfCellChange(CONST, grid, {col, row}) {
 function updateCoins(ELEMS, CONST, STATE, grid, {col, row}, coinValue) {
     const cell = grid[row][col];
     cell.value += coinValue;
-    if (cell.value > 0) {
-        cell.ref.text.textContent = decimalToHex(cell.value);
-    } else {
-        if (cell.type == "number") {
-            destroy(grid, {col, row});
-            grid[row][col] = newOpenCell();
-            renderOpen(ELEMS, CONST, STATE, grid, {col, row});
-            notifyAdjOfCellChange(CONST, grid, {col, row});
-        }
+    cell.ref.text.textContent = decimalToHex(cell.value);
+    if (cell.value == 0 && cell.type == "number") {
+        destroy(grid, {col, row});
+        grid[row][col] = newOpenCell();
+        renderOpen(ELEMS, CONST, STATE, grid, {col, row});
+        notifyAdjOfCellChange(CONST, grid, {col, row});
     }
 }
 
@@ -115,6 +112,7 @@ function newMachine(value) {
         type: "machine",
         value: value,
         data: {
+            hasAuto: false,
             arm: {
                 top: {
                     active: true,
@@ -188,6 +186,9 @@ function createCircle(cx, cy, r) {
 }
 
 function decimalToHex(decimalNum) {
+    if (15 < decimalNum) {
+        return "+";
+    }
     let hexLookup = "0123456789ABCDEF";
     return hexLookup[decimalNum];
 }
