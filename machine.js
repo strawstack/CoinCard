@@ -14,6 +14,17 @@ function anyArmMoving(cell) {
     return false;
 }
 
+function targetType(grid, {col, row}, direction) {
+    const offsetLookup = {
+        "top": {col: 0, row: -1},
+        "right": {col: 1, row: 0},
+        "bottom": {col: 0, row: 1},
+        "left": {col: -1, row: 0}
+    };
+    const {col: tCol, row: tRow} = add({col, row}, offsetLookup[direction]);
+    return grid[tRow][tCol].type; 
+}
+
 // NOTE: Don't remove. Adds menu click to global name space for help with later removal
 function menuBuyButtonClick() {}
 function menuSwitchClick() {}
@@ -23,6 +34,7 @@ function openMenu(ELEMS, CONST, STATE, DATA, grid, {col, row}) {
     const cell = grid[row][col];
     const menuRef = ELEMS.menu;
     const menuState = STATE.menu;
+    const centerCell = grid[CONST.CENTER.row][CONST.CENTER.col];
 
     if (cell.data.auto.purchased) {
         menuRef.querySelector(".purchased").style.display = "grid";
@@ -36,21 +48,29 @@ function openMenu(ELEMS, CONST, STATE, DATA, grid, {col, row}) {
 
     // ADD: menu Click listeners
     menuBuyButtonClick = () => {
-        cell.data.auto.purchased = true;
-        closeMenu(ELEMS, STATE);
-        openMenu(ELEMS, CONST, STATE, DATA, grid, {col, row});
+        if (cell.data.auto.value <= centerCell.value) {
+            updateCoins(ELEMS, CONST, STATE, 
+                grid, {col, row}, -1  *cell.data.auto.value);
+            cell.data.auto.purchased = true;
+            closeMenu(ELEMS, STATE);
+            openMenu(ELEMS, CONST, STATE, DATA, grid, {col, row});
+        }
     };
     menuRef.querySelector(".buyButton").addEventListener("click", menuBuyButtonClick);
     
     menuSwitchClick = () => {
         cell.data.auto.active = !cell.data.auto.active;
-        let a = cell.data.auto.active;
-        menuRef.querySelector(".switch").textContent = (a) ? "on" : "off";
-        if (a && !anyArmMoving(cell)) {
+        let active = cell.data.auto.active;
+        const direction = cell.data.auto.direction;
+        menuRef.querySelector(".switch").textContent = (active) ? "on" : "off";
+        if (active && !anyArmMoving(cell)) {
             const cell = grid[row][col];
-            const direction = cell.data.auto.direction;
-            coinArmClick(ELEMS, CONST, STATE, DATA,
-                grid, direction, cell.ref.arm[direction], {col, row});
+            if (!(targetType(grid, {col, row}, direction) == "open")) {
+                coinArmClick(ELEMS, CONST, STATE, DATA,
+                    grid, direction, cell.ref.arm[direction], {col, row});
+            } else {
+                cell.data.auto.waiting.state = true;
+            }
         }
     };
     menuRef.querySelector(".switch").addEventListener("click", menuSwitchClick);
@@ -74,9 +94,12 @@ function openMenu(ELEMS, CONST, STATE, DATA, grid, {col, row}) {
         buttonList[buttonIndex].className = "button selected";
         cell.data.auto.waiting.state = false;
         cell.data.auto.waiting.callback = () => {
+            const dir = cell.data.auto.direction;
+            if (!cell.data.arm[dir].active || 
+                cell.data.arm[dir].moving) return;
+            cell.data.arm[dir].moving = true;
             coinArmClick(ELEMS, CONST, STATE, DATA, 
-                grid, cell.data.auto.direction, 
-                cell.ref.arm[cell.data.auto.direction], {col, row});
+                grid, dir, cell.ref.arm[dir], {col, row});
         };
     };
     for (let button of buttonList) {
@@ -284,6 +307,10 @@ function renderMachine(ELEMS, CONST, STATE, grid, {col, row}) {
 
     // Default waiting state callback
     cell.data.auto.waiting.callback = () => {
+        const dir = cell.data.auto.direction;
+        if (!cell.data.arm[dir].active || 
+            cell.data.arm[dir].moving) return;
+        cell.data.arm[dir].moving = true;
         coinArmClick(ELEMS, CONST, STATE, DATA, 
             grid, cell.data.auto.direction, 
             cell.ref.arm[cell.data.auto.direction], {col, row});

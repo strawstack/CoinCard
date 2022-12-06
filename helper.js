@@ -71,8 +71,8 @@ function updateCoins(ELEMS, CONST, STATE, grid, {col, row}, coinValue) {
         destroy(grid, {col, row});
         grid[row][col] = newOpenCell();
         renderOpen(ELEMS, CONST, STATE, grid, {col, row});
-        notifyAdjOfCellChange(CONST, grid, {col, row});
     }
+    notifyAdjOfCellChange(CONST, grid, {col, row});
 }
 
 function add(a, b) {
@@ -125,7 +125,7 @@ function newMachine(value) {
                     state: false,
                     callback: () => {}
                 },
-
+                value: 5
             },
             arm: {
                 top: {
@@ -165,7 +165,6 @@ function destroy(grid, {col, row}) {
             cell.ref.text.remove();
             break;
         case "machine":
-            p(cell)
             cell.ref.text.remove();
             cell.ref.circle.remove();
             cell.ref.arm.top.remove();

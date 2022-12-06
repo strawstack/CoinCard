@@ -74,11 +74,12 @@ let grid;
         // Create and place center machine
         const CENTER_ROW = Math.floor(ROWS/2);
         const CENTER_COL = Math.floor(COLS/2);
+        
+        grid[CENTER_ROW][CENTER_COL] = newMachine(0);
 
         // TODO - remove debug settings
         grid[CENTER_ROW][CENTER_COL + 1].value = 1;
-        
-        grid[CENTER_ROW][CENTER_COL] = newMachine(0);
+        grid[CENTER_ROW][CENTER_COL].value = 100;
 
         return grid;
     }
