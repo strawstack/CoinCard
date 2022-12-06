@@ -1,0 +1,212 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Nunito&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
+
+@keyframes topArmOut {
+    from { cy: -22; } /* size2 - arm_size2 - pad */
+    to { cy: -80; } /* 15.5 to get to edge + CELL_SIZE/2 */
+}
+@keyframes topArmBack {
+    from { cy: -80; /* size2 - arm_size2 - pad */ }
+    to { cy: -22; }
+}
+
+@keyframes rightArmOut {
+    from { cx: 22; } /* size2 - arm_size2 - pad */
+    to { cx: 80; } /* 15.5 to get to edge + CELL_SIZE/2 */
+}
+@keyframes rightArmBack {
+    from { cx: 80; /* size2 - arm_size2 - pad */ }
+    to { cx: 22; }
+}
+
+@keyframes bottomArmOut {
+    from { cy: 22; } /* size2 - arm_size2 - pad */
+    to { cy: 80; } /* 15.5 to get to edge + CELL_SIZE/2 */
+}
+@keyframes bottomArmBack {
+    from { cy: 80; /* size2 - arm_size2 - pad */ }
+    to { cy: 22; }
+}
+
+@keyframes leftArmOut {
+    from { cx: -22; } /* size2 - arm_size2 - pad */
+    to { cx: -80; } /* 15.5 to get to edge + CELL_SIZE/2 */
+}
+@keyframes leftArmBack {
+    from { cx: -80; /* size2 - arm_size2 - pad */ }
+    to { cx: -22; }
+}
+
+html, body {
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+}
+
+body {
+    font-family: 'Varela Round', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    background: #CCC;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    position: relative;
+}
+
+    .underlay, .overlay {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        pointer-events: none;
+    }
+
+    .overlay {
+        z-index: 10;
+        pointer-events: none;
+        user-select: none;
+    }
+
+    .underlay {
+        z-index: 0;
+        background: white;
+        user-select: none;
+    }
+
+        .textContainer {
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            font-size: 3.5rem;
+            font-weight: 600;
+            color: white;
+            -webkit-text-stroke: 3px #444;
+
+            padding-top: 3px;
+        }
+        .textContainer.coinStore {
+            font-size: 1.3rem;
+            -webkit-text-stroke: 0px;
+            color: #FFD700; /* GOLD */
+        }
+        .textContainer.openCell {
+            -webkit-text-stroke-color: #FFD700;
+            color: white;
+        }
+
+    svg {
+        position: absolute;
+        z-index: 5;
+        background: transparent;
+    }
+
+        .gridLine {
+            stroke: #DDD;
+        }
+
+        .openCellCoin {
+            stroke: #FFD700; /* GOLD */
+            stroke-width: 3px;
+            fill: transparent;
+            cursor: pointer;
+        }
+
+        .outerCircle {
+            stroke: #444;
+            stroke-width: 3px;
+            fill: transparent;
+        }
+            .outerCircle:hover {
+                fill: #EEE;
+                cursor: pointer;
+            }
+
+            .outerCircle.centerMachine {
+                stroke: #FFD700; /* GOLD */
+            }
+
+        .coinArm {
+            stroke: #CCC;
+            stroke-width: 3px;
+            fill: white;
+            cursor: pointer;
+        }
+            .coinArm:hover {
+                fill: #EEE;
+            }
+            .coinArm.selected {
+                stroke: #444;   
+            }
+            .coinArm.filled {
+                fill: #FFD700; /* GOLD */
+            }
+            .coinArm.deactive {
+                stroke-dasharray: 5;
+            }
+
+            .coinArm.topArmOut {
+                animation-name: topArmOut; 
+                animation-duration: 1s;
+                animation-timing-function: ease-in-out;
+                animation-iteration-count: 1;
+                animation-fill-mode: forwards;
+            }
+            .coinArm.topArmBack {
+                animation-name: topArmBack;
+                animation-duration: 1s;
+                animation-timing-function: ease-in-out;
+                animation-iteration-count: 1;
+                animation-fill-mode: forwards;
+            }
+
+            .coinArm.rightArmOut {
+                animation-name: rightArmOut; 
+                animation-duration: 1s;
+                animation-timing-function: ease-in-out;
+                animation-iteration-count: 1;
+                animation-fill-mode: forwards;
+            }
+            .coinArm.rightArmBack {
+                animation-name: rightArmBack;
+                animation-duration: 1s;
+                animation-timing-function: ease-in-out;
+                animation-iteration-count: 1;
+                animation-fill-mode: forwards;
+            }
+            
+            .coinArm.bottomArmOut {
+                animation-name: bottomArmOut; 
+                animation-duration: 1s;
+                animation-timing-function: ease-in-out;
+                animation-iteration-count: 1;
+                animation-fill-mode: forwards;
+            }
+            .coinArm.bottomArmBack {
+                animation-name: bottomArmBack;
+                animation-duration: 1s;
+                animation-timing-function: ease-in-out;
+                animation-iteration-count: 1;
+                animation-fill-mode: forwards;
+            }
+            
+            .coinArm.leftArmOut {
+                animation-name: leftArmOut; 
+                animation-duration: 1s;
+                animation-timing-function: ease-in-out;
+                animation-iteration-count: 1;
+                animation-fill-mode: forwards;
+            }
+            .coinArm.leftArmBack {
+                animation-name: leftArmBack;
+                animation-duration: 1s;
+                animation-timing-function: ease-in-out;
+                animation-iteration-count: 1;
+                animation-fill-mode: forwards;
+            }            
