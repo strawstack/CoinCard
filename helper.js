@@ -2,6 +2,80 @@ function p(text) {
     console.log(text);
 }
 
+function createCircle(cx, cy, r) {
+    const svgns = "http://www.w3.org/2000/svg";
+    let circle = document.createElementNS(svgns, "circle");
+    circle.setAttribute("cx", cx);
+    circle.setAttribute("cy", cy);
+    circle.setAttribute("r", r);
+    return circle;
+}
+
+function makeLine(x1, y1, x2, y2) {
+    const svgns = "http://www.w3.org/2000/svg";
+    let line = document.createElementNS(svgns, "line");
+    line.setAttribute("x1", x1);
+    line.setAttribute("y1", y1);
+    line.setAttribute("x2", x2);
+    line.setAttribute("y2", y2);
+    return line;
+}
+
+function getDocumentBodySize() {
+    const WIDTH  = window.innerWidth;
+    const HEIGHT = window.innerHeight;
+    return {
+        WIDTH, HEIGHT
+    };
+}
+
+function getDocumentBodySizeAsMultipleOf(CELL_SIZE) {
+    const { WIDTH, HEIGHT } = getDocumentBodySize();
+    const ROWS = Math.floor( HEIGHT / CELL_SIZE );
+    const COLS = Math.floor( WIDTH / CELL_SIZE );
+    return {
+        WIDTH: COLS * CELL_SIZE,
+        HEIGHT: ROWS * CELL_SIZE,
+        ROWS: ROWS,
+        COLS: COLS
+    };
+}
+
+function drawGridLines() {
+    const state = readState(); 
+    const svg = state.ref.svg;
+    const {CELL_SIZE, WIDTH, HEIGHT, COLS, ROWS} = state.const; 
+
+    let line = makeLine(0, 1, WIDTH, 1);
+    line.setAttribute("class", "gridLine");
+    svg.appendChild(line);
+
+    svg.appendChild(line);
+    for (let r = 0; r < ROWS; r++) {
+        let line = makeLine(0, r * CELL_SIZE - 1, WIDTH, r * CELL_SIZE - 1);
+        line.setAttribute("class", "gridLine");
+        svg.appendChild(line);
+    }
+
+    line = makeLine(0, HEIGHT - 1, WIDTH, HEIGHT - 1);
+    line.setAttribute("class", "gridLine");
+    svg.appendChild(line);
+
+    line = makeLine(1, 0, 1, HEIGHT);
+    line.setAttribute("class", "gridLine");
+    svg.appendChild(line);
+
+    for (let c = 0; c < COLS; c++) {
+        let line = makeLine(c * CELL_SIZE - 1, 0, c * CELL_SIZE - 1, HEIGHT);
+        line.setAttribute("class", "gridLine");
+        svg.appendChild(line);
+    }
+
+    line = makeLine(WIDTH - 1, 0, WIDTH - 1, HEIGHT);
+    line.setAttribute("class", "gridLine");
+    svg.appendChild(line);
+}
+
 function getChangedCellDirection({notifiedCol, notifiedRow}, {col, row}) {
     const dcol = col - notifiedCol;
     const drow = row - notifiedRow;
@@ -158,8 +232,11 @@ function newMachine(value) {
         }
     }
 }
-function destroy(grid, {col, row}) {
+function destroy({col, row}) {
+    const state = readState();
+    const grid = state.grid;
     const cell = grid[row][col];
+
     switch(cell.type) {
         case "number":
             cell.ref.text.remove();
@@ -179,40 +256,22 @@ function destroy(grid, {col, row}) {
     }
 }
 
-function makeLine(x1, y1, x2, y2) {
-    const svgns = "http://www.w3.org/2000/svg";
-    let line = document.createElementNS(svgns, "line");
-    line.setAttribute("x1", x1);
-    line.setAttribute("y1", y1);
-    line.setAttribute("x2", x2);
-    line.setAttribute("y2", y2);
-    return line;
-}
-
-function createCircle(cx, cy, r) {
-    const svgns = "http://www.w3.org/2000/svg";
-    let circle = document.createElementNS(svgns, "circle");
-    circle.setAttribute("cx", cx);
-    circle.setAttribute("cy", cy);
-    circle.setAttribute("r", r);
-    return circle;
-}
-
 function decimalToHex(decimalNum) {
-    if (15 < decimalNum) {
-        return "+";
-    }
+    if (15 < decimalNum) { return "+"; }
     let hexLookup = "0123456789ABCDEF";
     return hexLookup[decimalNum];
 }
 
-function makeText(CELL_SIZE, col, row, value, addClassName) {
+function makeText({col, row}, value, addClassName) {
+    const state = readState();
+    const {CELL_SIZE} = state.const;
+    
     if (addClassName == undefined) {
         addClassName = "";
     }
     let text = document.createElement("div");
-    text.style.top = `${row - CELL_SIZE/2}px`;
-    text.style.left = `${col - CELL_SIZE/2}px`;
+    text.style.top = `${row * CELL_SIZE}px`;
+    text.style.left = `${col * CELL_SIZE}px`;
     text.style.width = `${CELL_SIZE}px`;
     text.style.height = `${CELL_SIZE}px`;
     text.textContent = value;
@@ -220,12 +279,12 @@ function makeText(CELL_SIZE, col, row, value, addClassName) {
     return text;
 }
 
-function render(ELEMS, CONST, STATE, grid, {col, row}) {
-    const cell = grid[row][col];
-    const renderLookup = {
-        "machine": () => renderMachine(ELEMS, CONST, STATE, grid, {col, row}),
-        "number": () => renderNumber(ELEMS, CONST, grid, {col, row}),
-        "open": () => renderOpen(ELEMS, CONST, STATE, grid, {col, row})
+function getOffsetFromDir(dir) {
+    const lookup = {
+        "top": {col: 0, row: -1},
+        "right": {col: 1, row: 0},
+        "bottom": {col: 0, row: 1},
+        "left": {col: -1, row: 0}
     };
-    renderLookup[cell.type]();
+    return lookup[dir];
 }

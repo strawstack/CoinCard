@@ -9,18 +9,6 @@ let grid;
         };
     }
 
-    function getDocumentBodySizeAsMultipleOf(CELL_SIZE) {
-        const { WIDTH, HEIGHT } = getDocumentBodySize();
-        const ROWS = Math.floor( HEIGHT / CELL_SIZE );
-        const COLS = Math.floor( WIDTH / CELL_SIZE );
-        return {
-            WIDTH: COLS * CELL_SIZE,
-            HEIGHT: ROWS * CELL_SIZE,
-            ROWS: ROWS,
-            COLS: COLS
-        };
-    }
-
     function drawGridLines({svg}, {CELL_SIZE, WIDTH, HEIGHT, COLS, ROWS}) {
         
         let line = makeLine(0, 1, WIDTH, 1);
