@@ -36,25 +36,6 @@ A simple game built with HTML and JS animated with CSS.
 
 # TODO
 
-- [ ] When a cell becomes open, and calls notify, adj machines should hid related arm.
-- [ ] On menu display, menu functions should wire.
-- [ ] On menu close, menu functions should remove.
-- [ ] When any machine arm moves the others should disable (to prevent coin overflow in that machines storage).
-- [ ] When open cell is clicked, player's center machine coins should be checked, and subtracted if they have enough for purchase.
-- [ ] Center machine only should show F+ when player has more than F coins.
+- [ ] Build machine in isolation with four/six machines around and perform full state test. (Complete interaction and CSS styles)
 
 # Bugs
-
-- [ ] Machines can exist on the edge and mine off the board.
-- [ ] Machines can exist next to open cells and mine into "unpurchased" open cells. 
-- [ ] If a machine mines machine B, and B has zero coins, the cell becomes open. 
-- [ ] If a machine removes last coin from another machine cell incorrectly becomes open.
-- [ ] Clicking an open cell turns into a machine wihthout checking of decrementing coins.
-- [ ] When an arm causes a cell to become open it should check for an open cell once it gets back because it may have to become hidden.
-- [ ] Animation class on an arm should be removed when animation ends.
-- [ ] When an Open Cell is purchased it should notify sourrounding cells.
-- [ ] When a new machine is created from open cell, arms are not disabled if there is an existing adj open cell next to the newly created machine.
-- [ ] Sending an arm to mine a cell that becomes open as the arm travels out mins the "cost" for the open cell. Arm should instead detect cell is open on arrival and return empty
-- [ ] When auto is active make sure to dash the arms to indicate they can't be selected
-    - [ ] Active arm is gold solid, but dashed when waiting
-- [ ] When auto is turned and the given direction faces an open cell, the arm still goes 
