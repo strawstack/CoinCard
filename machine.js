@@ -26,22 +26,56 @@ function toggleMenu({col, row}) {
     }
 }
 
+function coinArmShiftClick({col, row}, dir) {
+
+}
+
 function coinArmClick({col, row}, dir) {
     const state = readState();
     const grid = state.grid;
+    const {MOVE_SPEED} = state.const.MACHINE;
     const cell = grid[row][col];
+    const arm = cell.ref.arm[dir];
 
-    const offset = getOffsetFromDir(dir);
-    const classNameLookup = {
-        "top": {out: "topArmOut", back: "topArmBack"},
-        "right": {out: "rightArmOut", back: "rightArmBack"},
-        "bottom": {out: "bottomArmOut", back: "bottomArmBack"},
-        "left":{out: "leftArmOut", back: "leftArmBack"}
-    };
+    if (SHIFT_KEY_DOWN) {
+        coinArmShiftClick({col, row}, dir);
+        
+    } else if (cell.state == MACHINE_STATE.IDLE) {
+        changeState_MachineState({col, row}, getMovingState(dir));
+        
+        const {outClass, backClass} = getMovementClassNames(dir);
+        changeState_SetMachineArmClassName({col, row}, dir, outClass, true);
+        changeState_SetMachineArmClassName({col, row}, dir, backClass, false);
+        applyClassNamesSVG(arm, cell.classNames.arm[dir]);
+
+        setTimeout(() => {
+
+            // TODO Extract value from cell
+            const adjCell = getAdjCell({col, row}, dir);
+
+            changeState_SetMachineArmClassName({col, row}, dir, outClass, false);
+            changeState_SetMachineArmClassName({col, row}, dir, backClass, true);
+            applyClassNamesSVG(arm, cell.classNames.arm[dir]);
+            
+            setTimeout(() => {
+
+                // TODO Deliver value
+                // TODO check auto active and maybe launch again
+
+                changeState_SetMachineArmClassName({col, row}, dir, outClass, false);
+                changeState_SetMachineArmClassName({col, row}, dir, backClass, false);
+                applyClassNamesSVG(arm, cell.classNames.arm[dir]);
+                changeState_MachineState({col, row}, MACHINE_STATE.IDLE);
+
+            }, MOVE_SPEED);
+        }, MOVE_SPEED);
+    }
 }
 
-function createCoinArm(dir) {
+function createCoinArm({col, row}, dir) {
     const state = readState();
+    const grid = state.grid; 
+    const classNamesObject = grid[row][col].classNames.arm[dir];
     const {RING_SIZE, ARM_SIZE} = state.const.MACHINE;
 
     let size2 = RING_SIZE/2;
@@ -55,7 +89,7 @@ function createCoinArm(dir) {
     };
     let {cx, cy} = lookup[dir];
     let coinArm = createCircle(cx, cy, arm_size2);
-    coinArm.setAttribute("class", "coinArm");
+    applyClassNamesSVG(coinArm, classNamesObject);
     return coinArm;
 }
 
@@ -84,25 +118,29 @@ function initMachineInCell({col, row}) {
     const group = createGroup(CENTER);
     const outerCircle = createOuterCircle(0, 0, RING_SIZE/2);
     const text = createCoinStore({col, row});
-    const armTop = createCoinArm("top");
-    const armRight = createCoinArm("right");
-    const armBottom = createCoinArm("bottom");
-    const armLeft = createCoinArm("left");
+    const armTop = createCoinArm({col, row}, "top");
+    const armRight = createCoinArm({col, row}, "right");
+    const armBottom = createCoinArm({col, row}, "bottom");
+    const armLeft = createCoinArm({col, row}, "left");
 
     outerCircle.addEventListener("click", () => {
         p("click: outerCircle")
     });
     armTop.addEventListener("click", () => {
         p("click: armTop")
+        coinArmClick({col, row}, "top");
     });
     armRight.addEventListener("click", (e) => {
         p("click: armRight")
+        coinArmClick({col, row}, "right");
     });
     armBottom.addEventListener("click", () => {
         p("click: armBottom")
+        coinArmClick({col, row}, "bottom");
     });
     armLeft.addEventListener("click", () => {
         p("click: armLeft")
+        coinArmClick({col, row}, "left");
     });
 
     svg.appendChild(group);

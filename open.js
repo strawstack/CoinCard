@@ -26,8 +26,8 @@ function openCellClick({col, row}) {
 function createOpenCell({col, row}) {
     const state = readState();
     const {CELL_SIZE} = state.const;
-    const grid = state.grid;
-    const cell = grid[row][col];
+    const {grid, value_grid} = state;
+    const value = value_grid[row][col];
 
     let circle = createCircle(
         CELL_SIZE/2 + CELL_SIZE * col,
@@ -35,7 +35,7 @@ function createOpenCell({col, row}) {
         75/2 - 2 * 3 /* SIZE/2 - 2 * STROKE_WIDTH */
     );
     circle.setAttribute("class", "openCellCoin");
-    let text = makeText({col, row}, decimalToHex(cell.value), "openCell");
+    let text = makeText({col, row}, decimalToHex(value), "openCell");
     return {circle, text};
 }
 

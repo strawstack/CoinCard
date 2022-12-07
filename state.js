@@ -27,12 +27,35 @@ const state = {
             MAX_COINS: 15, 
             STROKE: 3,
             RING_SIZE: 69,
-            ARM_SIZE: 19
+            ARM_SIZE: 19,
+            MOVE_SPEED: 1000
         }
     },
     grid: [],
     value_grid: []
 };
+
+const MACHINE_STATE = {
+    IDLE: 'IDLE',
+    MOVING_TOP: 'MOVING_TOP',
+    MOVING_RIGHT: 'MOVING_RIGHT',
+    MOVING_BOTTOM: 'MOVING_BOTTOM',
+    MOVING_LEFT: 'MOVING_LEFT'
+};
+
+const SHIFT_KEY_DOWN = false;
+
+window.addEventListener("keydown", (e) => {
+    if (e.key == "Shift") {
+        SHIFT_KEY_DOWN = true;
+    }
+});
+
+window.addEventListener("keyup", (e) => {
+    if (e.key == "Shift") {
+        SHIFT_KEY_DOWN = false;
+    }
+});
 
 function initCell({col, row}) {
     const state = readState();
@@ -67,14 +90,24 @@ function initHTML() {
 
 function makeGrid() {
     const state = readState();
-    const {COLS, ROWS} = state.const;
+    const {COLS, ROWS, CENTER} = state.const;
 
-    let grid = [];
-
+    let value_grid = [];
     for (let r = 0; r < ROWS; r++) {
         let row = [];
         for (let c = 0; c < COLS; c++) {
-            row.push(newNumber());
+            row.push( Math.floor(Math.random() * 15) + 1 );
+        }
+        value_grid.push(row);
+    }
+
+    let grid = [];
+    for (let r = 0; r < ROWS; r++) {
+        let row = [];
+        for (let c = 0; c < COLS; c++) {
+            let n = newNumber();
+            n.value = value_grid[r][c];
+            row.push(n);
         }
         grid.push(row);
     }
@@ -85,18 +118,14 @@ function makeGrid() {
         let c = Math.floor(Math.random() * COLS);
         grid[r][c] = newOpenCell();
     }
-
-    // Create and place center machine
-    const CENTER_ROW = Math.floor(ROWS/2);
-    const CENTER_COL = Math.floor(COLS/2);
     
-    grid[CENTER_ROW][CENTER_COL] = newMachine(0);
+    grid[CENTER.row][CENTER.col] = newMachine(0);
 
     // TODO - remove debug settings
-    grid[CENTER_ROW][CENTER_COL + 1].value = 1;
-    grid[CENTER_ROW][CENTER_COL].value = 100;
+    grid[CENTER.row][CENTER.col + 1].value = 1;
+    grid[CENTER.row][CENTER.col].value = 100;
 
-    return grid;
+    return {grid, value_grid};
 }
 
 function initState() {
@@ -127,8 +156,9 @@ function initState() {
     state.const.CENTER = CENTER;
 
     drawGridLines();
-    const grid = makeGrid();
+    const {grid, value_grid} = makeGrid();
     state.grid = grid;
+    state.value_grid = value_grid;
 
     initHTML();
 }

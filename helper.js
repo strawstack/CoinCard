@@ -166,7 +166,7 @@ function createGroup({col, row}) {
 function newNumber() {
     return {
         type: "number",
-        value: (Math.floor(Math.random() * 15) + 1), // 1 to 9
+        value: null,
         ref: {
             text: null
         }
@@ -174,11 +174,8 @@ function newNumber() {
 }
 
 function newOpenCell() {
-    let index = Math.floor(Math.random() * 3);
-    let costs = [1, 3, 5];
     return {
         type: "open",
-        value: costs[index],
         ref: {
             circle: null,
             text: null
@@ -190,16 +187,12 @@ function newMachine(value) {
     return {
         type: "machine",
         value: value,
+        state: MACHINE_STATE.IDLE,
         data: {
             auto: {
                 purchased: false,
                 active: false,
-                direction: "right",
-                waiting: {
-                    state: false,
-                    callback: () => {}
-                },
-                value: 5
+                direction: "right"
             },
             arm: {
                 top: {
@@ -217,6 +210,32 @@ function newMachine(value) {
                 left: {
                     active: true,
                     moving: false
+                }
+            }
+        },
+        classNames: {
+            text: {},
+            circle: {},
+            arm: {
+                top: {
+                    coinArm: true,
+                    topArmOut: false,
+                    topArmBack: false
+                },
+                right: {
+                    coinArm: true,
+                    rightArmOut: false,
+                    rightArmBack: false
+                },
+                bottom: {
+                    coinArm: true,
+                    bottomArmOut: false,
+                    bottomArmBack: false
+                },
+                left: {
+                    coinArm: true,
+                    leftArmOut: false,
+                    leftArmBack: false
                 }
             }
         },
@@ -287,4 +306,55 @@ function getOffsetFromDir(dir) {
         "left": {col: -1, row: 0}
     };
     return lookup[dir];
+}
+
+function getAdjCell({col, row}, dir) {
+    const state = readState();
+    const grid = state.grid;
+
+    const offset = getOffsetFromDir(dir);
+    const {col: adjCol, row: adjRow} = add({col, row}, offset);
+    return grid[adjRow][adjCol];
+}
+
+function getMovingState(dir) {
+    const movingStateLookup = {
+        "top": MACHINE_STATE.MOVING_TOP,
+        "right": MACHINE_STATE.MOVING_RIGHT,
+        "bottom": MACHINE_STATE.MOVING_BOTTOM,
+        "left": MACHINE_STATE.MOVING_LEFT
+    };
+    return movingStateLookup[dir];
+}
+
+function applyClassNames(ref, classNamesObject) {
+    const names = []; 
+    for (let k in classNamesObject) {
+        let flag = classNamesObject[k];
+        if (flag) {
+            names.push(k);
+        }
+    }
+    ref.className = names.join(" ");
+}
+
+function applyClassNamesSVG(ref, classNamesObject) {
+    const names = []; 
+    for (let k in classNamesObject) {
+        let flag = classNamesObject[k];
+        if (flag) {
+            names.push(k);
+        }
+    }
+    ref.setAttribute("class", names.join(" "));
+}
+
+function getMovementClassNames(dir) {
+    const classNameLookup = {
+        "top": {outClass: "topArmOut", backClass: "topArmBack"},
+        "right": {outClass: "rightArmOut", backClass: "rightArmBack"},
+        "bottom": {outClass: "bottomArmOut", backClass: "bottomArmBack"},
+        "left":{outClass: "leftArmOut", backClass: "leftArmBack"}
+    };
+    return classNameLookup[dir];
 }
