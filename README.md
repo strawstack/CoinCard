@@ -36,6 +36,9 @@ A simple game built with HTML and JS animated with CSS.
 
 # TODO
 
+- [ ] A machine, with state, that performs correctly under all circumstances.
+    - [ ] Correct state transitions and only those transitions.
+
 - [ ] Build machine in isolation with four/six machines around and perform full state test. (Complete interaction and CSS styles)
 
 # Bugs
