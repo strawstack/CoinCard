@@ -13,6 +13,26 @@ const state = {
         overlay: null,
         menu: null
     },
+    classNames: {
+        menu: {
+            menu: false,
+            visible: false,
+            arm: {
+                top: {
+                    selected: false
+                },
+                right: {
+                    selected: false
+                },
+                bottom: {
+                    selected: false
+                },
+                left: {
+                    selected: false
+                },
+            }
+        }
+    },
     const: {
         CELL_SIZE: null,
         WIDTH: null,
@@ -164,6 +184,5 @@ function initState() {
 }
 
 function readState() {
-    // Could return a copy?
     return state;
 }

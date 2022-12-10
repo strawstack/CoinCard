@@ -298,6 +298,32 @@ function makeText({col, row}, value, addClassName) {
     return text;
 }
 
+function getValue({col, row}) {
+    const state = readState();
+    const grid = state.grid;
+    const cell = grid[row][col];
+    if (cell.type != "open") {
+        return cell.value; 
+    }
+    return 0;
+}
+
+function extractValue({col, row}, {col: tCol, row: tRow}) {
+    const state = readState();
+    const grid = state.grid;
+    const baseCell = grid[row][col];
+    const tCell = grid[tRow][tCol];
+    const MAX_COINS = state.const.MACHINE.MAX_COINS;
+    
+    let tCellValue = getValue({col: tCol, row: tRow});
+    if (tCell.type == "number") {
+        tCellValue = 1;
+    }
+    const availSpace = MAX_COINS - baseCell.value;
+    const valueTaken = Math.min(availSpace, tCellValue);
+    return valueTaken;     
+}
+
 function getOffsetFromDir(dir) {
     const lookup = {
         "top": {col: 0, row: -1},
@@ -308,13 +334,12 @@ function getOffsetFromDir(dir) {
     return lookup[dir];
 }
 
-function getAdjCell({col, row}, dir) {
+function getAdjCellPos({col, row}, dir) {
     const state = readState();
     const grid = state.grid;
 
     const offset = getOffsetFromDir(dir);
-    const {col: adjCol, row: adjRow} = add({col, row}, offset);
-    return grid[adjRow][adjCol];
+    return add({col, row}, offset);
 }
 
 function getMovingState(dir) {

@@ -41,30 +41,24 @@ function coinArmClick({col, row}, dir) {
         coinArmShiftClick({col, row}, dir);
         
     } else if (cell.state == MACHINE_STATE.IDLE) {
-        changeState_MachineState({col, row}, getMovingState(dir));
-        
         const {outClass, backClass} = getMovementClassNames(dir);
-        changeState_SetMachineArmClassName({col, row}, dir, outClass, true);
-        changeState_SetMachineArmClassName({col, row}, dir, backClass, false);
-        applyClassNamesSVG(arm, cell.classNames.arm[dir]);
+    
+        changeState_Machine_Auto_Active({col, row}, false);
+        changeState_MachineState({col, row}, getMovingState(dir));
+        changeState_Machine_ClassName_Arm({col, row}, dir, outClass, true);
 
         setTimeout(() => {
 
             // TODO Extract value from cell
-            const adjCell = getAdjCell({col, row}, dir);
-
-            changeState_SetMachineArmClassName({col, row}, dir, outClass, false);
-            changeState_SetMachineArmClassName({col, row}, dir, backClass, true);
-            applyClassNamesSVG(arm, cell.classNames.arm[dir]);
+            const {col: adjCol, row: adjRow} = getAdjCellPos({col, row}, dir);
+            const extractedValue = extractValue({col, row}, {col: adjCol, row: adjRow});
+            changeState_Cell_Value({col: adjCol, row: adjRow}, -1 * extractedValue);
+            changeState_Machine_ClassName_Arm({col, row}, dir, outClass, false);
+            changeState_Machine_ClassName_Arm({col, row}, dir, backClass, true);
             
             setTimeout(() => {
-
-                // TODO Deliver value
-                // TODO check auto active and maybe launch again
-
-                changeState_SetMachineArmClassName({col, row}, dir, outClass, false);
-                changeState_SetMachineArmClassName({col, row}, dir, backClass, false);
-                applyClassNamesSVG(arm, cell.classNames.arm[dir]);
+                changeState_Machine_ClassName_Arm({col, row}, dir, outClass, false);
+                changeState_Machine_ClassName_Arm({col, row}, dir, backClass, false);
                 changeState_MachineState({col, row}, MACHINE_STATE.IDLE);
 
             }, MOVE_SPEED);

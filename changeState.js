@@ -1,15 +1,39 @@
-function changeState_SetMachineArmClassName({col, row}, dir, className, value) {
-    state.grid[row][col]["classNames"]["arm"][dir][className] = value;
+function renderGlobalState() {
+    
 }
 
-function changeState_MachineState({col, row}, newState) {
-    state.grid[row][col]["state"] = newState;
+function renderGridAtCell({col, row}) {
+
+} 
+
+function render(pos) {
+    if (pos == undefined) {
+        renderGlobalState();
+    } else {
+        renderGridAtCell(pos);
+    }
 }
 
-function changeState_GridRefArm(property, {col, row}, value) {
-    state.grid[row][col]["ref"]["arm"][property] = value;
+function changeState(newState) {
+    state = {
+        ...state,
+        ...newState
+    };
+    render();
 }
 
-function changeState_GridRef(property, {col, row}, value) {
-    state.grid[row][col]["ref"][property] = value;
+function cs(newState) {
+    changeState(newState);
+}
+
+function changeState_Grid({col, row}, newState) {
+    state.grid[row][col] = {
+        ...state.grid[row][col],
+        newState
+    };
+    render({col, row});
+}
+
+function cs_grid({col, row}, newState) {
+    changeState_Grid({col, row}, newState);
 }
